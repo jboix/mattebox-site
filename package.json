@@ -31,7 +31,7 @@
     "@fontsource/barlow": "^5.2.0",
     "@fontsource/barlow-condensed": "^5.2.0",
     "@fontsource/jetbrains-mono": "^5.2.0",
-    "@mattebox/player": "^0.9.0",
+    "@mattebox/player": "^0.9.1",
     "astro": "^7.3.6",
     "mattebox": "^0.14.0"
   },
