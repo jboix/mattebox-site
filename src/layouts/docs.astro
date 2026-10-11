@@ -1,0 +1,244 @@
+---
+/**
+ * A page of the docs: the book and version menus and the chapters on the left, the page in the
+ * middle, and its headings on the right. The page says where it is three ways: the menus, the
+ * trail over the title, and a banner on any version that is not the latest release.
+ */
+import DocsNav from '../components/docs-nav.astro';
+import type { CollectedBook, CollectedVersion } from '../lib/docs.ts';
+import { latestOf, needsLine } from '../lib/docs.ts';
+import { link } from '../lib/url.ts';
+import Base from './base.astro';
+import '../styles/prose.css';
+
+/** A heading of the page, for the list on the right. */
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  book: CollectedBook;
+  version: CollectedVersion;
+  /** The chapter shown, or nothing on the version's home. */
+  slug?: string;
+  title: string;
+  description: string;
+  /** The page's source on GitHub. */
+  source?: string;
+  headings?: readonly Heading[];
+}
+
+const { book, version, slug, title, description, source, headings = [] } = Astro.props;
+const latest = latestOf(book);
+const versionName = version.next ? 'next' : version.version;
+/** The latest release's page for the same chapter, which stands for this one to a crawler. */
+const sameInLatest =
+  slug === undefined || latest.chapters.some((chapter) => chapter.slug === slug)
+    ? `${latest.path}${slug === undefined ? '' : `${slug}/`}`
+    : undefined;
+const pageTitle = `${title} · ${book.name}${version.latest ? '' : ` (${versionName})`}`;
+const outline = headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
+const needs = needsLine(version);
+---
+
+<Base
+  title={pageTitle}
+  description={description}
+  type="article"
+  current="docs"
+  {...version.latest || sameInLatest === undefined ? {} : { canonicalPath: sameInLatest }}
+>
+  <div class="container docs">
+    <aside class="rail">
+      <DocsNav book={book} version={version} {...slug === undefined ? {} : { slug }} />
+    </aside>
+
+    <article class="page" {...version.latest ? { 'data-pagefind-body': '' } : {}}>
+      <nav class="trail mono" aria-label="Breadcrumb">
+        <a href={link('docs/')}>Docs</a>
+        <span aria-hidden="true">/</span>
+        <a href={link(latest.path)} data-pagefind-filter="Book">{book.name}</a>
+        <span aria-hidden="true">/</span>
+        <a href={link(version.path)}>{versionName}</a>
+        {slug !== undefined && <span aria-hidden="true">/</span>}
+        {slug !== undefined && <span>{title}</span>}
+      </nav>
+
+      {
+        !version.latest && (
+          <p class="banner" data-pagefind-ignore>
+            {version.next
+              ? `This is the unreleased ${book.name} on the main branch.`
+              : `This is ${book.name} ${version.version}, an older release.`}{' '}
+            <a href={link(sameInLatest ?? latest.path)}>Read the latest release, {latest.version}.</a>
+          </p>
+        )
+      }
+      {
+        version.latest && version.next && (
+          <p class="banner" data-pagefind-ignore>
+            {book.name} has no release yet. This is the main branch.
+          </p>
+        )
+      }
+
+      <h1>{title}</h1>
+      <p class="facts mono" data-pagefind-ignore>
+        <span>{book.packageName}@{version.version}</span>
+        {needs !== undefined && <span>{needs}</span>}
+      </p>
+
+      <div class="prose"><slot /></div>
+
+      {
+        source !== undefined && (
+          <p class="source" data-pagefind-ignore>
+            <a href={source}>Read this page's source on GitHub</a>
+          </p>
+        )
+      }
+    </article>
+
+    <aside class="outline" aria-label="On this page">
+      {
+        outline.length > 0 && (
+          <>
+            <p class="outline-title mono">On this page</p>
+            <ul>
+              {outline.map((heading) => (
+                <li class={`depth-${heading.depth}`}>
+                  <a href={`#${heading.slug}`}>{heading.text}</a>
+                </li>
+              ))}
+            </ul>
+          </>
+        )
+      }
+    </aside>
+  </div>
+</Base>
+
+<style>
+  .docs {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr) 230px;
+    gap: 40px;
+    padding-top: 32px;
+    padding-bottom: 64px;
+    align-items: start;
+  }
+
+  .rail,
+  .outline {
+    position: sticky;
+    top: 88px;
+    max-height: calc(100vh - 104px);
+    overflow-y: auto;
+  }
+
+  .trail {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 14px;
+    font-size: 0.8125rem;
+    color: var(--color-ink-secondary);
+  }
+
+  .trail a {
+    color: var(--color-ink-secondary);
+  }
+
+  .banner {
+    padding: 12px 16px;
+    border: 1px solid var(--color-accent-border);
+    border-left: 4px solid var(--color-vermilion);
+    background: var(--color-accent-soft);
+  }
+
+  h1 {
+    margin-bottom: 0.25em;
+    font-size: clamp(2.25rem, 5vw, 3.25rem);
+  }
+
+  .facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+    margin-bottom: 28px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--color-border);
+    font-size: 0.8125rem;
+    color: var(--color-ink-secondary);
+  }
+
+  .source {
+    margin-top: 48px;
+    padding-top: 16px;
+    border-top: 1px solid var(--color-border);
+    font-size: 0.9375rem;
+  }
+
+  .outline-title {
+    margin: 0 0 8px;
+    font-size: 0.6875rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-ink-secondary);
+  }
+
+  .outline ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.9375rem;
+  }
+
+  .outline li {
+    margin-bottom: 5px;
+  }
+
+  .outline .depth-3 {
+    padding-left: 12px;
+  }
+
+  .outline a {
+    color: var(--color-ink-secondary);
+    text-decoration: none;
+  }
+
+  .outline a:hover {
+    color: var(--color-ink);
+  }
+
+  @media (max-width: 1180px) {
+    .docs {
+      grid-template-columns: 220px minmax(0, 1fr);
+    }
+
+    .outline {
+      display: none;
+    }
+  }
+
+  @media (max-width: 860px) {
+    .docs {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 20px;
+    }
+
+    .rail {
+      position: static;
+      max-height: none;
+      overflow: visible;
+    }
+  }
+</style>
+
+<script>
+  import { addCopyButtons } from '../scripts/copy-code.ts';
+
+  addCopyButtons(document.querySelectorAll<HTMLPreElement>('.prose pre'));
+</script>

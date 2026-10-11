@@ -1,0 +1,115 @@
+---
+/**
+ * A size chart as bars: Mattebox first, in vermilion, and the others in the ink's colour. The
+ * figures are the product repositories' own measurements.
+ */
+import type { SizeChart } from '../lib/size-chart.ts';
+
+interface Props {
+  chart: SizeChart;
+  /** What the first bar is called, when the chart's own label is the package name. */
+  first?: string;
+}
+
+const { chart, first } = Astro.props;
+const most = Math.max(...chart.rows.map((row) => row.kilobytes));
+---
+
+<figure class="size-bars">
+  <ol>
+    {
+      chart.rows.map((row, index) => (
+        <li class:list={{ ours: index === 0 }}>
+          <span class="label">
+            <strong>{index === 0 && first !== undefined ? first : row.label}</strong>
+            <span class="detail mono">{row.detail}</span>
+          </span>
+          <span class="track">
+            <span class="bar" style={`width: ${(row.kilobytes / most) * 100}%`} />
+          </span>
+          <span class="size mono num">{row.kilobytes.toFixed(1)} KB</span>
+        </li>
+      ))
+    }
+  </ol>
+  <figcaption class="mono">{chart.method}</figcaption>
+</figure>
+
+<style>
+  .size-bars {
+    margin: 0;
+  }
+
+  ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    display: grid;
+    grid-template-columns: minmax(150px, 260px) 1fr 92px;
+    align-items: center;
+    gap: 16px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .label {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .detail {
+    font-size: 0.75rem;
+    color: var(--color-ink-secondary);
+  }
+
+  .track {
+    display: block;
+    height: 22px;
+  }
+
+  .bar {
+    display: block;
+    height: 100%;
+    min-width: 4px;
+    background: var(--color-ink);
+    opacity: 0.32;
+  }
+
+  .ours .bar {
+    background: var(--color-vermilion);
+    opacity: 1;
+  }
+
+  .size {
+    text-align: right;
+    color: var(--color-ink-secondary);
+  }
+
+  .ours .size {
+    color: var(--color-ink);
+    font-weight: 500;
+  }
+
+  figcaption {
+    margin-top: 12px;
+    font-size: 0.75rem;
+    color: var(--color-ink-secondary);
+  }
+
+  @media (max-width: 720px) {
+    li {
+      grid-template-columns: 1fr 84px;
+      gap: 4px 12px;
+    }
+
+    .track {
+      grid-column: 1 / -1;
+      grid-row: 2;
+      height: 14px;
+    }
+  }
+</style>

@@ -1,0 +1,223 @@
+---
+/**
+ * The header: the mark and the name, the search on a page of the docs, the pages, the
+ * repositories, and the colour scheme toggle. On a narrow screen the pages are one row to swipe
+ * through under the name, and a button opens the search in a row of its own.
+ */
+import '../styles/search.css';
+import { repositories } from '../lib/site.ts';
+import { link } from '../lib/url.ts';
+import Mark from './mark.astro';
+import ThemeToggle from './theme-toggle.astro';
+
+interface Props {
+  /** The navigation section of the page shown. */
+  current?: 'features' | 'compare' | 'try' | 'docs';
+}
+
+const { current } = Astro.props;
+/** The search covers the docs alone, so the pages of the docs are the ones that show it. */
+const searchable = current === 'docs';
+const pages = [
+  { id: 'features', label: 'Features', href: link('features/') },
+  { id: 'compare', label: 'Compare', href: link('compare/') },
+  { id: 'try', label: 'Try it', href: link('try/') },
+  { id: 'docs', label: 'Docs', href: link('docs/') },
+] as const;
+---
+
+<header class="site-header">
+  <div class="container bar">
+    <a class="brand" href={link()} aria-label="Mattebox, home">
+      <Mark size={30} />
+      <span>Mattebox</span>
+    </a>
+    {searchable && <div class="search" id="search" data-bundle={link('pagefind/')} />}
+    <nav class="pages" aria-label="Site">
+      {
+        pages.map((page) => (
+          <a href={page.href} aria-current={page.id === current ? 'page' : undefined}>
+            {page.label}
+          </a>
+        ))
+      }
+    </nav>
+    <div class="tools">
+      {
+        searchable && (
+          <button class="tool search-toggle" type="button" aria-controls="search" aria-expanded="false">
+            <span class="visually-hidden">Search the docs</span>
+            <svg viewBox="0 0 16 16" width="18" height="18" aria-hidden="true">
+              <circle cx="7" cy="7" r="4.5" />
+              <path d="M10.5 10.5L14 14" />
+            </svg>
+          </button>
+        )
+      }
+      <a class="tool" href={repositories.engine}>
+        <span class="visually-hidden">Mattebox on GitHub</span>
+        <svg viewBox="0 0 16 16" width="18" height="18" aria-hidden="true">
+          <path
+            fill="currentColor"
+            d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"
+          ></path>
+        </svg>
+      </a>
+      <ThemeToggle />
+    </div>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in srgb, var(--color-ground) 88%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .bar {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    min-height: 64px;
+    flex-wrap: wrap;
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--color-ink);
+    text-decoration: none;
+    font: 600 1.5rem / 1 var(--font-display);
+    letter-spacing: 0.01em;
+  }
+
+  .pages {
+    display: flex;
+    gap: 4px;
+    margin-left: auto;
+  }
+
+  .pages a {
+    padding: 8px 12px;
+    color: var(--color-ink-secondary);
+    text-decoration: none;
+    font-weight: 500;
+    border-bottom: 2px solid transparent;
+  }
+
+  .pages a:hover {
+    color: var(--color-ink);
+  }
+
+  .pages a[aria-current="page"] {
+    color: var(--color-ink);
+    border-bottom-color: var(--color-vermilion);
+  }
+
+  .tools {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .search {
+    flex: 1;
+    max-width: 340px;
+  }
+
+  .tool {
+    display: inline-grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-control);
+    background: var(--color-surface);
+    color: var(--color-ink-secondary);
+  }
+
+  .tool:hover {
+    color: var(--color-ink);
+    border-color: var(--color-border-control);
+  }
+
+  .search-toggle {
+    display: none;
+    padding: 0;
+    cursor: pointer;
+  }
+
+  .search-toggle svg {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.75;
+    stroke-linecap: round;
+  }
+
+  @media (max-width: 720px) {
+    /* Two rows of header over a page that scrolls under it: opaque, so no text shows through. */
+    .site-header {
+      background: var(--color-ground);
+      backdrop-filter: none;
+    }
+
+    .bar {
+      gap: 0 12px;
+      padding-top: 10px;
+    }
+
+    .tools {
+      margin-left: auto;
+    }
+
+    .search-toggle {
+      display: inline-grid;
+    }
+
+    /* The search takes a row of its own, shown when its button is pressed. */
+    .search {
+      display: none;
+      order: 4;
+      flex-basis: 100%;
+      max-width: none;
+      padding-bottom: 10px;
+    }
+
+    .site-header[data-search-open] .search {
+      display: block;
+    }
+
+    /* The pages take a row of their own, to swipe through. */
+    .pages {
+      order: 3;
+      flex-basis: 100%;
+      margin: 0 -6px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+  }
+</style>
+
+<script>
+  import { mountSearch } from '../scripts/search.ts';
+
+  const header = document.querySelector<HTMLElement>('.site-header');
+  const search = document.querySelector<HTMLElement>('#search');
+  const toggle = document.querySelector<HTMLButtonElement>('.search-toggle');
+  if (header !== null && search !== null) {
+    const mounted = mountSearch(search);
+    // On a narrow screen the button shows the search's row and puts the cursor in it.
+    toggle?.addEventListener('click', async () => {
+      const open = header.toggleAttribute('data-search-open');
+      toggle.setAttribute('aria-expanded', String(open));
+      if (!open) return;
+      await mounted;
+      search.querySelector<HTMLInputElement>('input')?.focus();
+    });
+  }
+</script>

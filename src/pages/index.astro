@@ -1,0 +1,481 @@
+---
+/**
+ * The home page: the pitch with the running player, the size, what is in the box, the
+ * deliverables, where it runs, what to try, and the price.
+ */
+import Hero from '../components/hero.astro';
+import Invoice from '../components/invoice.astro';
+import SizeBars from '../components/size-bars.astro';
+import { featureCount, featureGroups } from '../data/features.ts';
+import { tryables } from '../data/try.ts';
+import Base from '../layouts/base.astro';
+import { collectedBooks, latestOf } from '../lib/docs.ts';
+import { siteDescription } from '../lib/site.ts';
+import { ours, readSizes } from '../lib/sizes.ts';
+import { link } from '../lib/url.ts';
+
+const sizes = readSizes();
+const books = collectedBooks();
+const nextSmallest = sizes.player.rows[1]?.kilobytes ?? ours(sizes.player);
+const kernel = ours(sizes.presets);
+const stats = [
+  { value: `${ours(sizes.player).toFixed(0)} KB`, label: 'The whole player, engine inside' },
+  { value: `${ours(sizes.engine).toFixed(0)} KB`, label: 'The engine with every stage' },
+  { value: `${kernel.toFixed(0)} KB`, label: 'The kernel alone' },
+  { value: '0', label: 'Runtime dependencies' },
+  { value: 'MIT', label: 'Licence' },
+];
+const targets = [
+  ['Browsers', 'Chrome, Edge, Firefox and Safari, desktop and mobile.'],
+  ['Safari', 'HLS goes to the browser where that is better, with FairPlay and AirPlay.'],
+  ['TVs', 'Samsung Tizen and LG webOS from 2021 models. The floor is Chromium 76.'],
+  ['Chromecast', 'A sender in the player, and a receiver you host.'],
+] as const;
+/** The latest release of a book, for the script tags. */
+const released = (id: string) => {
+  const book = books.find((each) => each.id === id);
+  if (book === undefined) throw new Error(`No book ${id}.`);
+  return latestOf(book).version;
+};
+const cdn = 'https://cdn.jsdelivr.net/npm';
+const element = '<mattebox-player src="https://example.com/master.m3u8"></mattebox-player>';
+/** The ways to install the player, the default first. Each is a tab with its code blocks. */
+const installs = [
+  {
+    id: 'npm',
+    label: 'npm',
+    blocks: [
+      'npm install @mattebox/player mattebox',
+      `${element}
+
+<script type="module">
+  import '@mattebox/player';
+</script>`,
+    ],
+  },
+  {
+    id: 'cdn',
+    label: 'CDN',
+    blocks: [
+      `<script src="${cdn}/mattebox@${released('engine')}/dist/cdn/mattebox.min.js" defer></script>
+<script src="${cdn}/@mattebox/player@${released('player')}/dist/cdn/mattebox-player.min.js" defer></script>
+
+${element}`,
+    ],
+  },
+] as const;
+---
+
+<Base tagline="An open source player for HLS and DASH" description={siteDescription}>
+  <Hero playerSize={ours(sizes.player)} nextSize={nextSmallest} />
+
+  <section class="stats">
+    <div class="container strip">
+      {
+        stats.map((stat) => (
+          <div>
+            <strong class="num">{stat.value}</strong>
+            <span>{stat.label}</span>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <p class="eyebrow">Size</p>
+      <h2 class="section-title">Your viewers download less</h2>
+      <p class="lede">
+        A player with its interface, HLS and DASH, bundled from npm the same way for each. The
+        repository measures this on every release, and you can run the script yourself.
+      </p>
+      <div class="chart">
+        <SizeBars chart={sizes.player} first="Mattebox player" />
+      </div>
+      <p><a href={link('compare/')}>See the engines and the presets compared</a></p>
+    </div>
+  </section>
+
+  <section class="section tinted" id="features">
+    <div class="container">
+      <p class="eyebrow">Features</p>
+      <h2 class="section-title">Small does not mean less</h2>
+      <p class="lede">
+        {featureCount} features, each with its docs. Widevine, PlayReady and FairPlay. Captions in
+        five formats. Thumbnails, chapters and trick play. Chromecast and TV remotes.
+      </p>
+      <div class="areas">
+        {
+          featureGroups.map((group) => (
+            <a class="card area" href={link(`features/#${group.id}`)}>
+              <h3>{group.title}</h3>
+              <p>{group.summary}</p>
+              <ul class="names">
+                {group.features.map((feature) => (
+                  <li>{feature.name}</li>
+                ))}
+              </ul>
+            </a>
+          ))
+        }
+      </div>
+      <p class="more"><a class="button button-secondary" href={link('features/')}>The full table</a></p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <p class="eyebrow">The kit</p>
+      <h2 class="section-title">Take the parts you need</h2>
+      <p class="lede">
+        Each part is a package with its own versions and its own docs. An engine alone, a player
+        with no interface, or all of it.
+      </p>
+      <div class="kit">
+        {
+          books.map((book) => {
+            const latest = latestOf(book);
+            return (
+              <a class="card part" href={link(latest.path)}>
+                <span class="mono version">{latest.next ? 'unreleased' : latest.version}</span>
+                <h3>{book.name}</h3>
+                <p>{book.summary}</p>
+                <code>{book.packageName}</code>
+              </a>
+            );
+          })
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section tinted">
+    <div class="container two">
+      <div>
+        <p class="eyebrow">Start</p>
+        <h2 class="section-title">Install it and write one tag</h2>
+        <p class="lede">
+          The player is a custom element. It works in plain HTML and in any framework, from npm or
+          from a CDN.
+        </p>
+        <div class="install" data-tabs>
+          <div class="tabs" role="tablist" aria-label="Install from">
+            {
+              installs.map((each, index) => (
+                <button
+                  type="button"
+                  role="tab"
+                  id={`install-tab-${each.id}`}
+                  aria-controls={`install-${each.id}`}
+                  aria-selected={index === 0 ? 'true' : 'false'}
+                  tabindex={index === 0 ? 0 : -1}
+                >
+                  {each.label}
+                </button>
+              ))
+            }
+          </div>
+          {
+            installs.map((each, index) => (
+              <div
+                role="tabpanel"
+                id={`install-${each.id}`}
+                aria-labelledby={`install-tab-${each.id}`}
+                hidden={index !== 0}
+              >
+                {each.blocks.map((block) => (
+                  <pre class="code"><code>{block}</code></pre>
+                ))}
+              </div>
+            ))
+          }
+        </div>
+        <p><a href={link('docs/player/getting-started/')}>Read the getting started chapter</a></p>
+      </div>
+      <div>
+        <p class="eyebrow">Runs on</p>
+        <dl class="targets">
+          {
+            targets.map(([name, what]) => (
+              <div>
+                <dt>{name}</dt>
+                <dd>{what}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <p class="eyebrow">Try it</p>
+      <h2 class="section-title">Do not take our word for it</h2>
+      <p class="lede">Every one of these opens in your browser and takes your own stream.</p>
+      <div class="tries">
+        {
+          tryables.slice(0, 3).map((each) => (
+            <a class="card try" href={each.href}>
+              <h3>{each.name}</h3>
+              <p>{each.what}</p>
+            </a>
+          ))
+        }
+      </div>
+      <p class="more"><a href={link('try/')}>All the demos and tools</a></p>
+    </div>
+  </section>
+
+  <Invoice />
+</Base>
+
+<style>
+  .stats {
+    border-block: 1px solid var(--color-border);
+    background: var(--color-surface);
+  }
+
+  .strip {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 24px;
+    padding-block: 28px;
+  }
+
+  .strip div {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .strip strong {
+    font: 600 2.5rem / 1 var(--font-display);
+  }
+
+  .strip span {
+    margin-top: 6px;
+    font-size: 0.9375rem;
+    color: var(--color-ink-secondary);
+  }
+
+  .tinted {
+    background: var(--color-surface-muted);
+  }
+
+  .chart {
+    margin: 36px 0 20px;
+  }
+
+  .kit,
+  .tries {
+    display: grid;
+    gap: 14px;
+    margin-top: 36px;
+  }
+
+  /* Columns, not a grid: the cards differ in height, and a grid row would leave the short ones
+     half empty. */
+  .areas {
+    columns: 3 320px;
+    column-gap: 14px;
+    margin-top: 36px;
+  }
+
+  .area {
+    margin-bottom: 14px;
+    break-inside: avoid;
+  }
+
+  .kit {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  }
+
+  .tries {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+
+  .area,
+  .part,
+  .try {
+    display: block;
+    padding: 20px;
+    color: var(--color-ink);
+    text-decoration: none;
+    transition: border-color 0.15s;
+  }
+
+  .area:hover,
+  .part:hover,
+  .try:hover {
+    border-color: var(--color-ink);
+    color: var(--color-ink);
+  }
+
+  .area h3,
+  .part h3,
+  .try h3 {
+    margin-bottom: 6px;
+    font-size: 1.5rem;
+  }
+
+  .area p,
+  .part p,
+  .try p {
+    margin: 0;
+    color: var(--color-ink-secondary);
+    font-size: 0.9375rem;
+  }
+
+  .names {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 16px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* A pill per feature. A long name wraps inside its pill, so the radius is not a full round. */
+  .names li {
+    padding: 3px 10px;
+    border: 1px solid var(--color-border-control);
+    border-radius: 13px;
+    background: var(--color-ground);
+    font-size: 0.8125rem;
+    line-height: 1.35;
+  }
+
+  .part {
+    border-top: 3px solid var(--color-vermilion);
+  }
+
+  .part code {
+    display: block;
+    margin-top: 12px;
+    font-size: 0.8125rem;
+    color: var(--color-ink-secondary);
+  }
+
+  .version {
+    float: right;
+    font-size: 0.8125rem;
+    color: var(--color-ink-secondary);
+  }
+
+  .more {
+    margin-top: 28px;
+  }
+
+  .two {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    gap: 56px;
+  }
+
+  .install {
+    margin: 24px 0 16px;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 4px;
+  }
+
+  /* A tab joins the code under it: the selected one takes the code block's ground. */
+  .tabs button {
+    padding: 8px 16px;
+    border: 0;
+    border-radius: var(--radius-card) var(--radius-card) 0 0;
+    background: transparent;
+    color: var(--color-ink-secondary);
+    font: 500 0.875rem / 1.2 var(--font-mono);
+    cursor: pointer;
+  }
+
+  .tabs button:hover {
+    color: var(--color-ink);
+  }
+
+  .tabs button[aria-selected="true"] {
+    background: var(--color-charcoal);
+    color: #e9e3d9;
+  }
+
+  .code {
+    margin: 0;
+    padding: 18px 20px;
+    overflow-x: auto;
+    background: var(--color-charcoal);
+    color: #e9e3d9;
+    border-radius: var(--radius-card);
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+
+  /* The first block sits under the tabs, and a second one is a step after it. */
+  .code:first-child {
+    border-top-left-radius: 0;
+  }
+
+  .code + .code {
+    margin-top: 8px;
+  }
+
+  .targets {
+    margin: 0;
+  }
+
+  .targets div {
+    padding: 14px 0;
+    border-bottom: 1px solid var(--color-border-control);
+  }
+
+  .targets dt {
+    font: 600 1.375rem / 1.2 var(--font-display);
+  }
+
+  .targets dd {
+    margin: 2px 0 0;
+    color: var(--color-ink-secondary);
+  }
+
+  @media (max-width: 860px) {
+    .strip {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .two {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 32px;
+    }
+  }
+</style>
+
+<script>
+  // The install tabs: a press or an arrow key selects a tab and shows its panel.
+  for (const group of document.querySelectorAll<HTMLElement>('[data-tabs]')) {
+    const tabs = [...group.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    /** Selects a tab and shows the panel it controls. */
+    const select = (chosen: HTMLButtonElement) => {
+      for (const tab of tabs) {
+        const selected = tab === chosen;
+        tab.setAttribute('aria-selected', String(selected));
+        tab.tabIndex = selected ? 0 : -1;
+        const panel = document.getElementById(tab.getAttribute('aria-controls') ?? '');
+        if (panel !== null) panel.hidden = !selected;
+      }
+    };
+    for (const [index, tab] of tabs.entries()) {
+      tab.addEventListener('click', () => select(tab));
+      tab.addEventListener('keydown', (event) => {
+        if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
+        const step = event.key === 'ArrowRight' ? 1 : -1;
+        const next = tabs[(index + step + tabs.length) % tabs.length];
+        if (next === undefined) return;
+        select(next);
+        next.focus();
+      });
+    }
+  }
+</script>

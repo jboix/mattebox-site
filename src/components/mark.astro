@@ -1,0 +1,26 @@
+---
+/**
+ * The Mattebox mark: four panels around an opening. Two face the light, in the ink's colour,
+ * and two face away, in vermilion. Drawn without its paper ground, so it sits on any surface.
+ */
+interface Props {
+  /** The mark's width and height in pixels. */
+  size?: number;
+}
+
+const { size = 28 } = Astro.props;
+---
+
+<svg class="mark" viewBox="40 60 320 280" width={size} height={size * 0.875} aria-hidden="true">
+  <polygon points="60,72 340,72 254,144 146,144" fill="currentColor"></polygon>
+  <polygon points="48,84 134,156 134,244 48,316" fill="currentColor"></polygon>
+  <polygon points="60,328 340,328 254,256 146,256" fill="var(--color-vermilion)"></polygon>
+  <polygon points="352,84 266,156 266,244 352,316" fill="var(--color-vermilion)"></polygon>
+</svg>
+
+<style>
+  .mark {
+    display: block;
+    flex: none;
+  }
+</style>

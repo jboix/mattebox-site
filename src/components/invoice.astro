@@ -1,0 +1,242 @@
+---
+/**
+ * The price, as an invoice: every line is something a paid player bills for, and every amount
+ * is zero. The lines are the groups of the feature table with their features under them, so the
+ * invoice lists what is there.
+ */
+import { featureGroups } from '../data/features.ts';
+import { repositories } from '../lib/site.ts';
+import { link } from '../lib/url.ts';
+
+const terms = [
+  ['Impressions', 'Unlimited'],
+  ['Domains', 'Unlimited'],
+  ['Seats', 'Unlimited'],
+  ['Licence key', 'None'],
+  ['Sales calls', '0'],
+] as const;
+---
+
+<section class="section invoice-section" id="price">
+  <div class="container layout">
+    <div class="pitch">
+      <p class="eyebrow">Pricing</p>
+      <h2 class="section-title">Here is the invoice</h2>
+      <p class="lede">
+        A commercial player bills you by the impression, by the domain, or by the feature. Mattebox
+        is MIT licensed. You get all of it, and you owe nothing.
+      </p>
+      <p class="actions">
+        <a class="button button-primary" href={link('docs/player/getting-started/')}>Get started</a>
+        <a class="button button-secondary" href={link('compare/')}>Compare the players</a>
+      </p>
+    </div>
+
+    <div class="invoice mono">
+      <div class="paper">
+        <header>
+          <span>Mattebox</span>
+          <span>Invoice 0000</span>
+        </header>
+        <table>
+          <caption class="visually-hidden">What Mattebox costs</caption>
+          <tbody class="rows">
+            {
+              featureGroups.map((group) => (
+                <>
+                  <tr class="line">
+                    <th scope="row">{group.title}</th>
+                    <td class="num">0.00</td>
+                  </tr>
+                  <tr class="items">
+                    <td colspan="2">{group.features.map((feature) => feature.name).join(', ')}</td>
+                  </tr>
+                </>
+              ))
+            }
+          </tbody>
+          <tbody class="terms">
+            {
+              terms.map(([name, value]) => (
+                <tr>
+                  <th scope="row">{name}</th>
+                  <td>{value}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+          <tfoot>
+            <tr class="total">
+              <th scope="row">Total due</th>
+              <td class="num">0.00</td>
+            </tr>
+          </tfoot>
+        </table>
+        <footer>
+          <span class="stamp">Paid in full</span>
+          <a href={`${repositories.engine}/blob/main/LICENSE`}>Licence: MIT</a>
+        </footer>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .invoice-section {
+    background: var(--color-charcoal);
+    color: var(--color-paper);
+  }
+
+  .invoice-section .lede {
+    color: #c9c2b7;
+  }
+
+  .invoice-section .eyebrow {
+    color: #f08068;
+  }
+
+  .invoice-section .button-secondary {
+    color: var(--color-paper);
+    border-color: #6a6a72;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr minmax(320px, 460px);
+    gap: 56px;
+    align-items: start;
+  }
+
+  /* The invoice is longer than the pitch, so the pitch stays in view beside it. */
+  .pitch {
+    position: sticky;
+    top: 104px;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 28px;
+  }
+
+  /* The receipt lies on the page at a slight angle. Its shadow is a filter, because the paper's
+     mask would cut a box shadow off. */
+  .invoice {
+    font-size: 0.875rem;
+    transform: rotate(-0.6deg);
+    filter: drop-shadow(0 20px 28px rgba(0, 0, 0, 0.4));
+  }
+
+  /* The paper of the mark, torn off a roll: a mask cuts a row of teeth into its top and bottom
+     edges. Each mask covers a little over half the height, so the two meet in the middle. */
+  .paper {
+    --tooth: 14px;
+    padding: 36px 28px 30px;
+    background: var(--color-paper);
+    color: var(--color-charcoal);
+    mask:
+      conic-gradient(from 135deg at top, #0000, #000 1deg 89deg, #0000 90deg) top / var(--tooth)
+        51% repeat-x,
+      conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom /
+        var(--tooth) 51% repeat-x;
+  }
+
+  header,
+  footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  header {
+    padding-bottom: 14px;
+    border-bottom: 2px solid var(--color-charcoal);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th,
+  td {
+    padding: 3px 0;
+    font-weight: 400;
+    text-align: left;
+  }
+
+  td {
+    text-align: right;
+  }
+
+  /* A dashed rule between the features and the terms, and under the terms. */
+  .rows tr:first-child > *,
+  .terms tr:first-child > * {
+    padding-top: 10px;
+  }
+
+  .rows tr:last-child > *,
+  .terms tr:last-child > * {
+    padding-bottom: 10px;
+    border-bottom: 1px dashed #b9ae9c;
+  }
+
+  .line th {
+    font-weight: 500;
+  }
+
+  /* The features of a line, under it, as the small print of a receipt. */
+  .items td {
+    padding: 0 3.5em 8px 0;
+    font-size: 0.75rem;
+    line-height: 1.5;
+    text-align: left;
+    color: #6b655c;
+  }
+
+  .invoice tfoot .total > * {
+    padding: 14px 0;
+    font-size: 1.25rem;
+    font-weight: 500;
+    border-bottom: 2px solid var(--color-charcoal);
+  }
+
+  footer {
+    align-items: center;
+    padding-top: 16px;
+  }
+
+  footer a {
+    color: var(--color-charcoal);
+  }
+
+  .stamp {
+    padding: 4px 10px;
+    border: 2px solid var(--color-vermilion);
+    color: #b23a23;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    transform: rotate(-4deg);
+  }
+
+  @media (max-width: 860px) {
+    .layout {
+      grid-template-columns: 1fr;
+      gap: 36px;
+    }
+
+    .pitch {
+      position: static;
+    }
+
+    /* A receipt this long would leave a narrow screen at an angle, so it lies upright. */
+    .invoice {
+      transform: none;
+    }
+  }
+</style>

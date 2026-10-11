@@ -1,0 +1,103 @@
+---
+/**
+ * Every page of every book: a version's home, which lists its chapters, and each chapter. The
+ * latest release of a book lives at the book's own address, and the other versions under theirs.
+ */
+import { getEntry, render } from 'astro:content';
+import type { GetStaticPaths } from 'astro';
+import Docs from '../../layouts/docs.astro';
+import type { CollectedBook, CollectedVersion } from '../../lib/docs.ts';
+import { collectedBooks, entryId } from '../../lib/docs.ts';
+import { link } from '../../lib/url.ts';
+
+interface Props {
+  book: CollectedBook;
+  version: CollectedVersion;
+  slug?: string;
+}
+
+export const getStaticPaths = (() =>
+  collectedBooks().flatMap((book) =>
+    book.versions.flatMap((version) => {
+      const home = version.path.replace(/^docs\//, '').replace(/\/$/, '');
+      return [
+        { params: { path: home }, props: { book, version } },
+        ...version.chapters.map((chapter) => ({
+          params: { path: `${home}/${chapter.slug}` },
+          props: { book, version, slug: chapter.slug },
+        })),
+      ];
+    }),
+  )) satisfies GetStaticPaths;
+
+const { book, version, slug } = Astro.props as Props;
+const entry =
+  slug === undefined ? undefined : await getEntry('docs', entryId(book.id, version.id, slug));
+if (slug !== undefined && entry === undefined) throw new Error(`No chapter ${book.id}/${slug}.`);
+const rendered = entry === undefined ? undefined : await render(entry);
+const chapters = await Promise.all(
+  version.chapters.map(async (chapter) => ({
+    ...chapter,
+    description: (await getEntry('docs', entryId(book.id, version.id, chapter.slug)))?.data
+      .description,
+  })),
+);
+---
+
+{
+  entry !== undefined && rendered !== undefined ? (
+    <Docs
+      book={book}
+      version={version}
+      slug={entry.data.chapter}
+      title={entry.data.title}
+      description={entry.data.description}
+      source={entry.data.source}
+      headings={rendered.headings}
+    >
+      <rendered.Content />
+    </Docs>
+  ) : (
+    <Docs
+      book={book}
+      version={version}
+      title={`${book.name} docs`}
+      description={`${book.summary} The docs of ${book.packageName}.`}
+    >
+      <p>{book.summary}</p>
+      <pre><code>npm install {book.packageName}</code></pre>
+      <h2 id="chapters">Chapters</h2>
+      <ul class="chapter-list">
+        {chapters.map((chapter) => (
+          <li>
+            <a href={link(`${version.path}${chapter.slug}/`)}>{chapter.title}</a>
+            <span>{chapter.description}</span>
+          </li>
+        ))}
+      </ul>
+    </Docs>
+  )
+}
+
+<style>
+  .chapter-list {
+    padding: 0;
+    list-style: none;
+  }
+
+  .chapter-list li {
+    display: flex;
+    flex-direction: column;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .chapter-list a {
+    font-weight: 600;
+    font-size: 1.0625rem;
+  }
+
+  .chapter-list span {
+    color: var(--color-ink-secondary);
+  }
+</style>

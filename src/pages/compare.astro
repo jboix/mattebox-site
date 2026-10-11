@@ -1,0 +1,158 @@
+---
+/**
+ * The comparison: the licence and the price of each player, and the measured sizes.
+ */
+import SizeBars from '../components/size-bars.astro';
+import { compared, comparedOn } from '../data/compare.ts';
+import Base from '../layouts/base.astro';
+import { ours, readSizes } from '../lib/sizes.ts';
+import { link } from '../lib/url.ts';
+
+const sizes = readSizes();
+const yes = (value: boolean) => (value ? 'Yes' : 'No');
+---
+
+<Base
+  title="Compare"
+  description="Mattebox against hls.js, dash.js, Shaka Player, video.js, Bitmovin and THEOplayer: licence, price, protocols and measured bundle size."
+  current="compare"
+>
+  <div class="container section">
+    <p class="eyebrow">Compare</p>
+    <h1 class="section-title">Smaller, and free</h1>
+    <p class="lede">
+      Three things you can check yourself: what each player costs, what it plays, and how many
+      bytes your viewers download before the first frame.
+    </p>
+
+    <section class="block">
+      <h2>Licence and price</h2>
+      <div class="scroll">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Player</th>
+              <th scope="col">Licence</th>
+              <th scope="col">Price</th>
+              <th scope="col">HLS</th>
+              <th scope="col">DASH</th>
+              <th scope="col">Player interface</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              compared.map((each, index) => (
+                <tr class:list={{ ours: index === 0 }}>
+                  <th scope="row">{each.name}</th>
+                  <td>
+                    <a href={each.source}>{each.licence}</a>
+                  </td>
+                  <td>{each.price}</td>
+                  <td>{yes(each.hls)}</td>
+                  <td>{yes(each.dash)}</td>
+                  <td>{each.interface}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+      <p class="note">
+        Checked on {comparedOn}. Each licence links to where its project states it. Bitmovin and
+        Dolby publish their own prices, so this table does not repeat them.
+      </p>
+    </section>
+
+    <section class="block">
+      <h2>The whole player</h2>
+      <p>
+        A player with its interface and both protocols. Mattebox is {ours(sizes.player).toFixed(1)} KB
+        with every stage of the engine inside.
+      </p>
+      <SizeBars chart={sizes.player} first="Mattebox player" />
+    </section>
+
+    <section class="block">
+      <h2>The engine alone</h2>
+      <p>
+        The part that reads the stream. Mattebox with every stage is {ours(sizes.engine).toFixed(1)} KB.
+      </p>
+      <SizeBars chart={sizes.engine} first="Mattebox" />
+    </section>
+
+    <section class="block">
+      <h2>Or less, if you need less</h2>
+      <p>
+        The engine is a kernel and the stages you add. A preset is a ready-made list. An HLS-only
+        page downloads the first rows, and nothing of DASH or DRM.
+      </p>
+      <SizeBars chart={sizes.presets} />
+      <p class="note">
+        The sizes come from the scripts in the
+        <a href="https://github.com/jboix/mattebox/blob/main/scripts/size-chart.mjs">engine</a> and
+        <a href="https://github.com/jboix/mattebox-player/blob/main/scripts/size-chart.mjs">player</a>
+        repositories. Each one installs the other players from npm at the version shown and bundles
+        them the same way, so you can run it and get the same numbers. See
+        <a href={link('docs/engine/presets-and-stages/')}>presets and stages</a> for what each
+        preset holds.
+      </p>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .block {
+    margin-top: 64px;
+  }
+
+  .block h2 {
+    font-size: 2rem;
+    padding-bottom: 8px;
+    border-bottom: 3px solid var(--color-ink);
+  }
+
+  .scroll {
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    min-width: 720px;
+    border-collapse: collapse;
+  }
+
+  th,
+  td {
+    padding: 12px 16px 12px 0;
+    border-bottom: 1px solid var(--color-border);
+    text-align: left;
+  }
+
+  thead th {
+    font: 500 0.6875rem / 1.2 var(--font-mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-ink-secondary);
+  }
+
+  tbody th {
+    font-weight: 600;
+  }
+
+  .ours th,
+  .ours td {
+    background: var(--color-accent-soft);
+    box-shadow: inset 0 -2px 0 var(--color-vermilion);
+  }
+
+  .ours th {
+    padding-left: 12px;
+  }
+
+  .note {
+    margin-top: 16px;
+    font-size: 0.9375rem;
+    color: var(--color-ink-secondary);
+    max-width: 78ch;
+  }
+</style>

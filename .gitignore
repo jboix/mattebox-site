@@ -1,0 +1,18 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+.astro/
+
+# The docs collected from the product repositories, and their clones.
+.docs/
+.sources/
+public/doc-assets/
+
+# misc
+.DS_Store
+*.log
+*.tsbuildinfo
+.idea
+.vscode

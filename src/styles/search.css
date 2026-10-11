@@ -1,0 +1,120 @@
+/* The search in the header. Pagefind draws the field and the results at run time, so these
+   rules are global, and they sit under #search to win over the ones Pagefind ships. */
+#search {
+  position: relative;
+  font-size: 0.875rem;
+  color: var(--color-ink-secondary);
+  --pagefind-ui-scale: 0.75;
+  --pagefind-ui-primary: var(--color-accent);
+  --pagefind-ui-text: var(--color-ink);
+  --pagefind-ui-background: var(--color-surface);
+  --pagefind-ui-border: var(--color-border-control);
+  --pagefind-ui-tag: var(--color-surface-muted);
+  --pagefind-ui-border-width: 1px;
+  --pagefind-ui-border-radius: var(--radius-control);
+  --pagefind-ui-font: var(--font-sans);
+}
+
+#search .pagefind-ui__form::before {
+  top: 12px;
+  left: 12px;
+  width: 16px;
+  height: 16px;
+}
+
+#search .pagefind-ui__search-input {
+  height: 40px;
+  padding: 0 40px 0 36px;
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--color-ink);
+}
+
+#search .pagefind-ui__search-input::placeholder {
+  opacity: 0.6;
+}
+
+/* The clear button is a cross. Its text stays in the page for a screen reader, at no size. */
+#search .pagefind-ui__search-clear {
+  top: 4px;
+  right: 4px;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-size: 0;
+}
+
+#search .pagefind-ui__search-clear::before,
+#search .pagefind-ui__search-clear::after {
+  content: "";
+  position: absolute;
+  left: 9px;
+  top: 15px;
+  width: 14px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--color-ink-secondary);
+  transform: rotate(45deg);
+}
+
+#search .pagefind-ui__search-clear::after {
+  transform: rotate(-45deg);
+}
+
+#search .pagefind-ui__search-clear:hover::before,
+#search .pagefind-ui__search-clear:hover::after {
+  background: var(--color-ink);
+}
+
+/* The results hang under the field, over the page. */
+#search .pagefind-ui__drawer {
+  position: absolute;
+  z-index: 60;
+  top: calc(100% + 6px);
+  left: 0;
+  width: min(560px, calc(100vw - 36px));
+  max-height: min(70vh, 640px);
+  overflow-y: auto;
+  gap: 0 24px;
+  padding: 4px 18px 16px;
+  border: 1px solid var(--color-border-control);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+}
+
+#search:not([data-open]) .pagefind-ui__drawer {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  /* The field's row has its own padding under it, which the results must not hang below. */
+  #search .pagefind-ui__drawer {
+    top: calc(100% - 4px);
+    width: 100%;
+  }
+}
+
+/* A match is marked in the brand's soft colour, which reads in both colour schemes. */
+#search mark {
+  padding: 0 1px;
+  background: var(--color-accent-soft);
+  color: var(--color-ink);
+}
+
+#search .pagefind-ui__result {
+  padding: 14px 0;
+}
+
+/* The filter by book is one plain row over the results. */
+#search .pagefind-ui__filter-panel {
+  margin-top: 12px;
+}
+
+#search .pagefind-ui__filter-panel fieldset {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}

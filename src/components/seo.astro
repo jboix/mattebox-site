@@ -1,0 +1,54 @@
+---
+/**
+ * The head tags a page shares with crawlers and with links pasted elsewhere: the title, the
+ * description, the canonical address, and the Open Graph card.
+ */
+import { siteName } from '../lib/site.ts';
+import { absoluteLink } from '../lib/url.ts';
+
+/** Props of the head tags. */
+interface Props {
+  /** The page's title, without the site name. Omitted on the home page. */
+  title?: string;
+  /** What the home page's title says after the site name. */
+  tagline?: string;
+  /** One or two sentences, about 155 characters. */
+  description: string;
+  /** `website` for the home page, `article` for a doc. */
+  type?: 'website' | 'article';
+  /** The page's path when it is served at another address than its URL, such as `404.html`. */
+  servedAt?: string;
+  /** The site path of the page that stands for this one, such as the latest release's doc. */
+  canonicalPath?: string;
+}
+
+const { title, tagline, description, type = 'website', servedAt, canonicalPath } = Astro.props;
+const fullTitle = title === undefined ? `${siteName} · ${tagline ?? ''}` : `${title} · ${siteName}`;
+const canonicalOf = servedAt ?? canonicalPath;
+const canonical =
+  canonicalOf === undefined
+    ? new URL(Astro.url.pathname, Astro.site).href
+    : absoluteLink(canonicalOf, Astro.site);
+const image = absoluteLink('social-preview.png', Astro.site);
+---
+
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+{servedAt !== undefined && <meta name="robots" content="noindex" />}
+<link rel="sitemap" href={absoluteLink('sitemap-index.xml', Astro.site)} />
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#f3ede4" />
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1c1c20" />
+<meta property="og:site_name" content={siteName} />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:type" content={type} />
+<meta property="og:image" content={image} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="Mattebox: an open source HLS and DASH player for the web." />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={fullTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={image} />

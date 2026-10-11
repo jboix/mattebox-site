@@ -1,0 +1,17 @@
+---
+/** The page a missing address answers with. */
+import Base from '../layouts/base.astro';
+import { link } from '../lib/url.ts';
+---
+
+<Base title="Not found" description="This page does not exist." servedAt="404.html">
+  <div class="container section">
+    <p class="eyebrow">404</p>
+    <h1 class="section-title">Nothing in the frame</h1>
+    <p class="lede">This address has no page. A doc may have moved between versions.</p>
+    <p>
+      <a class="button button-primary" href={link('docs/')}>Go to the docs</a>
+      <a class="button button-secondary" href={link()}>Home</a>
+    </p>
+  </div>
+</Base>

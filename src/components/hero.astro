@@ -1,0 +1,262 @@
+---
+/**
+ * The hero: the pitch, and the player running on the page. They sit side by side on a wide
+ * screen, and the player comes under the pitch on a narrow one.
+ */
+import { hosted } from '../lib/site.ts';
+import { link } from '../lib/url.ts';
+
+interface Props {
+  /** The whole player's size in kilobytes. */
+  playerSize: number;
+  /** The next smallest player's size in kilobytes. */
+  nextSize: number;
+}
+
+const { playerSize, nextSize } = Astro.props;
+/**
+ * The Mattebox film, which the site serves itself: one set of segments behind a DASH manifest
+ * and an HLS playlist, with five renditions, subtitles, chapters and thumbnails. It has no
+ * sound, so it starts by itself. The visitor picks the protocol, and the engine plays both,
+ * in Safari too.
+ */
+const film = link('showreel/');
+const protocols = [
+  { id: 'dash', label: 'DASH', src: `${film}manifest.mpd`, type: 'application/dash+xml' },
+  { id: 'hls', label: 'HLS', src: `${film}master.m3u8`, type: 'application/vnd.apple.mpegurl' },
+] as const;
+const first = protocols[0];
+const share = Math.round((playerSize / nextSize) * 100);
+---
+
+<section class="hero">
+  <div class="container layout">
+    <div class="copy">
+      <p class="eyebrow">Open source · MIT</p>
+      <h1>HLS and DASH.<br />Everything in the box.<br /><em>Half the weight.</em></h1>
+      <p class="lede">
+        Mattebox is a player for the web: an engine, a player element, and the accessories around
+        them. It plays what the paid players play, in {playerSize.toFixed(0)} KB. That is {share}% of
+        the next smallest player.
+      </p>
+      <p class="actions">
+        <a class="button button-primary" href={link('docs/player/getting-started/')}>Get started</a>
+        <a class="button button-secondary" href={hosted.demo}>Open the demo</a>
+      </p>
+    </div>
+    <div class="player">
+      <div class="stage">
+        <mattebox-player
+          controls="custom"
+          autoplay
+          muted
+          playsinline
+          native-hls="off"
+          src={first.src}
+          type={first.type}
+          poster={`${film}poster.jpg`}
+          chapters={`${film}chapters.vtt`}
+          thumbnails={`${film}thumbnails.vtt`}
+          data-film
+          data-untouched
+        >
+          <mbx-title heading="The Mattebox film" subheading="Playing in Mattebox, on this page"></mbx-title>
+          <mbx-start-button></mbx-start-button>
+          <mbx-spinner></mbx-spinner>
+          <mbx-error-screen></mbx-error-screen>
+          <mbx-control-bar>
+            <mbx-current-time></mbx-current-time>
+            <mbx-seek-bar></mbx-seek-bar>
+            <mbx-duration></mbx-duration>
+            <mbx-play-button></mbx-play-button>
+            <mbx-spacer></mbx-spacer>
+            <mbx-chapters-menu></mbx-chapters-menu>
+            <mbx-subtitles-menu></mbx-subtitles-menu>
+            <mbx-quality-menu></mbx-quality-menu>
+            <mbx-fullscreen-button></mbx-fullscreen-button>
+          </mbx-control-bar>
+        </mattebox-player>
+      </div>
+      <div class="under">
+        <fieldset class="protocols">
+          <legend class="visually-hidden">Protocol</legend>
+          {
+            protocols.map((each) => (
+              <button
+                type="button"
+                data-protocol
+                data-src={each.src}
+                data-type={each.type}
+                aria-pressed={each === first ? 'true' : 'false'}
+              >
+                {each.label}
+              </button>
+            ))
+          }
+        </fieldset>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    padding: 48px 0 40px;
+    overflow: hidden;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 36px;
+  }
+
+  h1 {
+    font-size: clamp(2.75rem, 7vw, 5.25rem);
+    line-height: 0.95;
+    letter-spacing: -0.005em;
+    text-transform: uppercase;
+  }
+
+  h1 em {
+    font-style: normal;
+    color: var(--color-vermilion);
+  }
+
+  .lede {
+    margin-top: 16px;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 28px 0 0;
+  }
+
+  /* The stage holds the picture's shape before the player has loaded, so the page does not
+     move. */
+  .stage {
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: #000;
+    border-radius: var(--radius-card);
+  }
+
+  .stage :global(mattebox-player) {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* The film starts by itself, with nothing over it. The bar and the title show from the
+     visitor's first touch of the player, and then hide by the player's own rules. */
+  .stage :global([data-untouched] mbx-control-bar),
+  .stage :global([data-untouched] mbx-title) {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* Under the player: the protocol the film plays over. */
+  .under {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 16px;
+    margin-top: 12px;
+  }
+
+  .protocols {
+    display: flex;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .protocols button {
+    padding: 6px 16px;
+    border: 1px solid var(--color-border-control);
+    background: transparent;
+    color: var(--color-ink-secondary);
+    font: 500 0.8125rem / 1.2 var(--font-mono);
+    letter-spacing: 0.06em;
+    cursor: pointer;
+  }
+
+  .protocols button + button {
+    border-left: 0;
+  }
+
+  .protocols button[aria-pressed="true"] {
+    background: var(--color-ink);
+    border-color: var(--color-ink);
+    color: var(--color-ink-inverse);
+  }
+
+  /* Side by side on a wide screen: the pitch and the player share the row, so the player is
+     in view without a scroll. The title is smaller, to fit its lines in half the row. */
+  @media (min-width: 1000px) {
+    .hero {
+      padding: 72px 0 64px;
+    }
+
+    .layout {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 48px;
+      align-items: center;
+    }
+
+    h1 {
+      font-size: clamp(2.75rem, 4.3vw, 3.5rem);
+    }
+  }
+
+  @media (max-width: 720px) {
+    .hero {
+      padding-top: 40px;
+    }
+
+    .under {
+      padding: 0;
+    }
+
+    /* On a phone the player runs from edge to edge. */
+    .stage {
+      margin: 0 -18px;
+      border-radius: 0;
+    }
+  }
+</style>
+
+<script>
+  import '@mattebox/player';
+
+  const player = document.querySelector<HTMLElement & { video: HTMLVideoElement }>('[data-film]');
+  // The controls stay away until the visitor touches the player, by pointer or by keyboard.
+  for (const type of ['pointermove', 'pointerdown', 'keydown', 'focusin']) {
+    player?.addEventListener(type, () => player.removeAttribute('data-untouched'), { once: true });
+  }
+  // The protocol buttons load the same film over the other manifest, and keep its place.
+  const buttons = document.querySelectorAll<HTMLButtonElement>('[data-protocol]');
+  for (const button of buttons) {
+    button.addEventListener('click', () => {
+      if (player === null || button.getAttribute('aria-pressed') === 'true') return;
+      for (const each of buttons) each.setAttribute('aria-pressed', String(each === button));
+      const video = player.video;
+      const at = video.currentTime;
+      const playing = !video.paused;
+      player.setAttribute('type', button.dataset.type ?? '');
+      player.setAttribute('src', button.dataset.src ?? '');
+      video.addEventListener(
+        'loadedmetadata',
+        () => {
+          video.currentTime = at;
+          if (playing) video.play().catch(() => undefined);
+        },
+        { once: true },
+      );
+    });
+  }
+</script>

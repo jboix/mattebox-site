@@ -1,0 +1,230 @@
+---
+/**
+ * Where a reader is in the docs, and where else they can go: the book, the version of that
+ * book, and the book's chapters. The book and the version are two menus, kept apart, because
+ * each book has versions of its own.
+ */
+import type { CollectedBook, CollectedVersion } from '../lib/docs.ts';
+import { collectedBooks, latestOf, menuOrder } from '../lib/docs.ts';
+import { link } from '../lib/url.ts';
+
+interface Props {
+  book: CollectedBook;
+  version: CollectedVersion;
+  /** The chapter shown, or nothing on the version's home. */
+  slug?: string;
+}
+
+const { book, version, slug } = Astro.props;
+const books = collectedBooks();
+const groups = [...new Set(books.map((each) => each.group))];
+/** Where a version leads from this page: the same chapter, or its home when it lacks it. */
+const hrefIn = (each: CollectedVersion) =>
+  link(
+    slug !== undefined && each.chapters.some((chapter) => chapter.slug === slug)
+      ? `${each.path}${slug}/`
+      : each.path,
+  );
+---
+
+<nav class="docs-nav" aria-label="Docs">
+  <details class="menu" data-menu>
+    <summary>
+      <span class="label">Book</span>
+      <span class="value">{book.name}</span>
+    </summary>
+    <div class="options">
+      {
+        groups.map((group) => (
+          <div class="group">
+            <p>{group}</p>
+            {books
+              .filter((each) => each.group === group)
+              .map((each) => (
+                <a
+                  href={link(latestOf(each).path)}
+                  aria-current={each.id === book.id ? 'true' : undefined}
+                >
+                  <span>{each.name}</span>
+                  <span class="note mono">{each.packageName}</span>
+                </a>
+              ))}
+          </div>
+        ))
+      }
+    </div>
+  </details>
+
+  <details class="menu" data-menu>
+    <summary>
+      <span class="label">Version</span>
+      <span class="value mono">{version.next ? 'next' : version.version}</span>
+    </summary>
+    <div class="options">
+      {
+        menuOrder(book).map((each) => (
+          <a href={hrefIn(each)} aria-current={each.id === version.id ? 'true' : undefined}>
+            <span class="mono">{each.next ? 'next' : each.version}</span>
+            <span class="note">{each.note}</span>
+          </a>
+        ))
+      }
+    </div>
+  </details>
+
+  <ul class="chapters">
+    <li>
+      <a href={link(version.path)} aria-current={slug === undefined ? 'page' : undefined}>
+        Overview
+      </a>
+    </li>
+    {
+      version.chapters.map((chapter) => (
+        <li>
+          <a
+            href={link(`${version.path}${chapter.slug}/`)}
+            aria-current={chapter.slug === slug ? 'page' : undefined}
+          >
+            {chapter.title}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>
+
+<style>
+  .docs-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .menu {
+    position: relative;
+  }
+
+  summary {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 8px 34px 8px 12px;
+    border: 1px solid var(--color-border-control);
+    border-radius: var(--radius-control);
+    background: var(--color-surface);
+    cursor: pointer;
+    list-style: none;
+    position: relative;
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  summary::after {
+    content: "";
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    width: 7px;
+    height: 7px;
+    margin-top: -6px;
+    border: solid var(--color-ink-secondary);
+    border-width: 0 1.5px 1.5px 0;
+    transform: rotate(45deg);
+  }
+
+  .label {
+    font: 500 0.6875rem / 1.2 var(--font-mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-ink-secondary);
+  }
+
+  .value {
+    font-weight: 600;
+  }
+
+  .options {
+    position: absolute;
+    z-index: 20;
+    left: 0;
+    right: 0;
+    top: calc(100% + 4px);
+    max-height: 70vh;
+    overflow-y: auto;
+    padding: 6px;
+    border: 1px solid var(--color-border-control);
+    border-radius: var(--radius-control);
+    background: var(--color-surface);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+  }
+
+  .group p {
+    margin: 8px 8px 2px;
+    font: 500 0.6875rem / 1.2 var(--font-mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-ink-secondary);
+  }
+
+  .options a {
+    display: flex;
+    flex-direction: column;
+    padding: 6px 8px;
+    border-radius: var(--radius-control);
+    color: var(--color-ink);
+    text-decoration: none;
+  }
+
+  .options a:hover {
+    background: var(--color-surface-muted);
+  }
+
+  .options a[aria-current] {
+    box-shadow: inset 3px 0 0 var(--color-vermilion);
+  }
+
+  .note {
+    font-size: 0.8125rem;
+    color: var(--color-ink-secondary);
+  }
+
+  .chapters {
+    margin: 8px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .chapters a {
+    display: block;
+    padding: 5px 12px;
+    border-left: 2px solid var(--color-border);
+    color: var(--color-ink-secondary);
+    text-decoration: none;
+  }
+
+  .chapters a:hover {
+    color: var(--color-ink);
+  }
+
+  .chapters a[aria-current="page"] {
+    color: var(--color-ink);
+    font-weight: 600;
+    border-left-color: var(--color-vermilion);
+  }
+</style>
+
+<script>
+  // A menu closes on a press outside it and on Escape, as a native select does.
+  const menus = document.querySelectorAll<HTMLDetailsElement>('[data-menu]');
+  document.addEventListener('click', (event) => {
+    for (const menu of menus) {
+      if (!menu.contains(event.target as Node)) menu.open = false;
+    }
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') return;
+    for (const menu of menus) menu.open = false;
+  });
+</script>

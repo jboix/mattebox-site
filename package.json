@@ -1,0 +1,53 @@
+{
+  "name": "mattebox-site",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The Mattebox website: the landing page, the feature table and the versioned docs of every deliverable, built statically by Astro.",
+  "license": "MIT",
+  "author": "Josep Boix Requesens",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jboix/mattebox-site.git"
+  },
+  "type": "module",
+  "scripts": {
+    "prepare": "husky",
+    "collect": "bun scripts/collect.ts",
+    "dev": "bun scripts/collect.ts && astro dev",
+    "build": "bun scripts/collect.ts && astro build && bun scripts/search-index.ts && bun scripts/check-links.ts && bun scripts/check-meta.ts",
+    "preview": "bun scripts/preview.ts",
+    "screenshots": "bun scripts/screenshots.ts",
+    "lint": "biome ci .",
+    "lint:fix": "biome check --write .",
+    "docs:check": "remark . --quiet --frail --use ./scripts/remark-check-formatted.mjs",
+    "docs:format": "remark . --quiet --output",
+    "typecheck": "astro check && tsc --noEmit -p tsconfig.test.json",
+    "knip": "knip",
+    "test": "bun test",
+    "verify": "bun run lint && bun run docs:check && bun run knip && bun run test && bun run build && bun run typecheck"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "~3.7.4",
+    "@fontsource/barlow": "^5.2.0",
+    "@fontsource/barlow-condensed": "^5.2.0",
+    "@fontsource/jetbrains-mono": "^5.2.0",
+    "@mattebox/player": "^0.9.0",
+    "astro": "^7.3.6",
+    "mattebox": "^0.14.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@biomejs/biome": "^2.5.15",
+    "@commitlint/cli": "^21.2.2",
+    "@commitlint/config-conventional": "^21.2.2",
+    "@types/bun": "1.4.2",
+    "husky": "^9.1.7",
+    "knip": "^6.33.0",
+    "pagefind": "^1.5.2",
+    "playwright": "1.62.1",
+    "remark-cli": "^12.0.1",
+    "remark-gfm": "^4.0.1",
+    "remark-validate-links": "^13.1.0",
+    "typescript": "~6.0.3"
+  }
+}

@@ -1,0 +1,57 @@
+/* The site's colours, fonts and radii. They come from the Mattebox mark: warm paper, charcoal
+   panels, vermilion panels. Vermilion is the brand's and the one call to action's. */
+:root {
+  --font-sans: "Barlow", system-ui, sans-serif;
+  --font-display: "Barlow Condensed", "Barlow", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --color-paper: #f3ede4;
+  --color-charcoal: #2b2b30;
+  --color-vermilion: #e0543c;
+
+  --color-ground: #f3ede4;
+  --color-surface: #fbf8f3;
+  --color-surface-muted: #ebe4d8;
+  --color-border: #dcd3c4;
+  --color-border-control: #c9bfae;
+  --color-divider: #e6dfd2;
+  --color-ink: #2b2b30;
+  --color-ink-secondary: #5f5c5a;
+  --color-ink-inverse: #f3ede4;
+  /* Vermilion as text needs more contrast on paper than the mark's own. */
+  --color-accent: #b23a23;
+  --color-accent-hover: #8f2c19;
+  --color-accent-soft: #f7e3dc;
+  --color-accent-border: #ecc3b8;
+  --color-on-accent: #ffffff;
+  --color-ok-ink: #1f5e38;
+  --color-ok-soft: #e3efe1;
+  --color-ok-border: #c4dcc3;
+
+  --radius-panel: 4px;
+  --radius-card: 4px;
+  --radius-control: 3px;
+  --radius-pill: 999px;
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --color-ground: #1c1c20;
+  --color-surface: #24242a;
+  --color-surface-muted: #2b2b30;
+  --color-border: #3a3a41;
+  --color-border-control: #4a4a52;
+  --color-divider: #303036;
+  --color-ink: #f3ede4;
+  --color-ink-secondary: #aaa49a;
+  --color-ink-inverse: #1c1c20;
+  --color-accent: #f08068;
+  --color-accent-hover: #f7a290;
+  --color-accent-soft: #3a2420;
+  --color-accent-border: #5c342b;
+  --color-on-accent: #1c1c20;
+  --color-ok-ink: #9fd3ad;
+  --color-ok-soft: #1f2e24;
+  --color-ok-border: #2f4a38;
+  color-scheme: dark;
+}

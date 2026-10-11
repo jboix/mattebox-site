@@ -1,0 +1,241 @@
+---
+import { featureCount, featureGroups } from '../data/features.ts';
+/**
+ * The support table: every feature, the deliverable that provides it, and the chapter that
+ * documents it.
+ */
+import Base from '../layouts/base.astro';
+import { collectedBooks, latestOf } from '../lib/docs.ts';
+import { link } from '../lib/url.ts';
+
+const books = collectedBooks();
+/** The address of a chapter in its book's latest version. */
+const docHref = ([bookId, slug]: readonly [string, string]) => {
+  const book = books.find((each) => each.id === bookId);
+  if (book === undefined) throw new Error(`No book ${bookId}.`);
+  return link(`${latestOf(book).path}${slug}/`);
+};
+const nameOf = (bookId: string) => books.find((each) => each.id === bookId)?.name ?? bookId;
+---
+
+<Base
+  title="Features"
+  description={`The ${featureCount} features Mattebox supports, each with the package that provides it and the docs that explain it.`}
+  current="features"
+>
+  <div class="container section">
+    <p class="eyebrow">Features</p>
+    <h1 class="section-title">Everything in the box</h1>
+    <p class="lede">
+      {featureCount} features across {featureGroups.length} areas. Each one names the package that
+      provides it and links to its docs. You install the packages you need, and the rest stays out
+      of your bundle.
+    </p>
+
+    <nav class="jump" aria-label="Areas">
+      {featureGroups.map((group) => <a href={`#${group.id}`}>{group.title}</a>)}
+    </nav>
+
+    {
+      featureGroups.map((group) => (
+        <section class="group" id={group.id}>
+          <header>
+            <h2>{group.title}</h2>
+            <p>{group.summary}</p>
+          </header>
+          <table>
+            <colgroup>
+              <col />
+              <col class="by" />
+              <col class="docs" />
+            </colgroup>
+            <thead>
+              <tr>
+                <th scope="col">Feature</th>
+                <th scope="col">Provided by</th>
+                <th scope="col">Docs</th>
+              </tr>
+            </thead>
+            <tbody>
+              {group.features.map((feature) => (
+                <tr>
+                  <th scope="row">
+                    <svg class="check" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+                      <path d="M3 8.5l3.2 3.2L13 4.8" />
+                    </svg>
+                    {feature.name}
+                    {feature.note !== undefined && <small>{feature.note}</small>}
+                  </th>
+                  <td>
+                    {feature.by.map((id) => (
+                      <span class="pill">{nameOf(id)}</span>
+                    ))}
+                  </td>
+                  <td>
+                    <a href={docHref(feature.doc)}>Read</a>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
+      ))
+    }
+  </div>
+</Base>
+
+<style>
+  .jump {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 28px 0 8px;
+  }
+
+  .jump a {
+    padding: 4px 12px;
+    border: 1px solid var(--color-border-control);
+    border-radius: var(--radius-pill);
+    color: var(--color-ink);
+    text-decoration: none;
+    font-size: 0.9375rem;
+  }
+
+  .jump a:hover {
+    border-color: var(--color-ink);
+  }
+
+  .group {
+    margin-top: 56px;
+  }
+
+  .group header {
+    padding-bottom: 10px;
+    border-bottom: 3px solid var(--color-ink);
+  }
+
+  .group h2 {
+    margin-bottom: 4px;
+    font-size: 2rem;
+  }
+
+  .group header p {
+    margin: 0;
+    color: var(--color-ink-secondary);
+  }
+
+  /* Fixed widths, so the columns start at the same place in every group's table. */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+
+  col.by {
+    width: 260px;
+  }
+
+  col.docs {
+    width: 70px;
+  }
+
+  thead th:first-child {
+    padding-left: 28px;
+  }
+
+  thead th:last-child {
+    padding-right: 0;
+    text-align: right;
+  }
+
+  thead th {
+    padding: 10px 12px 6px 0;
+    font: 500 0.6875rem / 1.2 var(--font-mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-align: left;
+    color: var(--color-ink-secondary);
+  }
+
+  tbody th,
+  td {
+    padding: 10px 12px 10px 0;
+    border-bottom: 1px solid var(--color-border);
+    text-align: left;
+    vertical-align: top;
+    font-weight: 500;
+  }
+
+  /* The check sits in the cell's left padding, so a note lines up under its feature's name. */
+  tbody th {
+    position: relative;
+    padding-left: 28px;
+  }
+
+  .check {
+    position: absolute;
+    left: 0;
+    top: 15px;
+    fill: none;
+    stroke: var(--color-vermilion);
+    stroke-width: 2.25;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  small {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 400;
+    color: var(--color-ink-secondary);
+  }
+
+  td .pill {
+    margin: 0 4px 4px 0;
+  }
+
+  td:last-child {
+    padding-right: 0;
+    text-align: right;
+  }
+
+  @media (max-width: 720px) {
+    /* The rows are grids here, so the table and its body are plain blocks: a grid row inside
+       a table would sit in the first column alone. */
+    table,
+    tbody {
+      display: block;
+    }
+
+    thead,
+    colgroup {
+      display: none;
+    }
+
+    tr {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    tbody th {
+      grid-column: 1 / -1;
+    }
+
+    tbody th,
+    td {
+      padding: 2px 0;
+      border: 0;
+    }
+
+    tbody th,
+    td:first-of-type {
+      padding-left: 28px;
+    }
+
+    .check {
+      top: 7px;
+    }
+  }
+</style>
