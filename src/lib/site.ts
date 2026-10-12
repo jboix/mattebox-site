@@ -19,12 +19,12 @@ export const repositories = {
   site: `${github}/mattebox-site`,
 } as const;
 
-/** The pages the project hosts on GitHub Pages: what a reader can try in a browser. */
+/** The pages the project hosts, each on its own subdomain: what a reader can try in a browser. */
 export const hosted = {
-  playground: 'https://jboix.github.io/mattebox/',
-  demo: 'https://jboix.github.io/mattebox-player/',
-  playlist: 'https://jboix.github.io/mattebox-player/playlist.html',
-  reels: 'https://jboix.github.io/mattebox-player/reels.html',
-  editor: 'https://jboix.github.io/mattebox-player-editor/',
-  receiver: 'https://jboix.github.io/mattebox-receiver/',
+  playground: 'https://engine.mattebox.ch/',
+  demo: 'https://demo.mattebox.ch/',
+  playlist: 'https://demo.mattebox.ch/playlist.html',
+  reels: 'https://demo.mattebox.ch/reels.html',
+  editor: 'https://editor.mattebox.ch/',
+  receiver: 'https://cast.mattebox.ch/',
 } as const;

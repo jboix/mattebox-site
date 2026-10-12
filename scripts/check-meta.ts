@@ -10,7 +10,7 @@ import { join, relative } from 'node:path';
 const dist = new URL('../dist/', import.meta.url).pathname;
 
 /** The site's origin, without a trailing slash. */
-const siteOrigin = (process.env.SITE_URL || 'https://jboix.github.io').replace(/\/$/, '');
+const siteOrigin = (process.env.SITE_URL || 'https://mattebox.ch').replace(/\/$/, '');
 
 /** The site's base path, between slashes: `/` at the root. */
 const sitePath = `/${(process.env.SITE_BASE || '/').replace(/^\/|\/$/g, '')}/`.replace('//', '/');

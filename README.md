@@ -8,9 +8,9 @@
 [![license: MIT](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
 
 The website of [Mattebox](https://github.com/jboix/mattebox), an open source
-HLS and DASH player for the web. It holds the landing page, the feature
-table, the comparison with other players, and the versioned docs of every
-deliverable.
+HLS and DASH player for the web, at [mattebox.ch](https://mattebox.ch/). It
+holds the landing page, the feature table, the comparison with other
+players, and the versioned docs of every deliverable.
 
 The site is static. Astro builds it, and Bun runs every script.
 
@@ -84,9 +84,10 @@ The files are committed, so a build needs no browser.
 
 ## Deployment
 
-The `Website` workflow builds the site and deploys it to GitHub Pages. It
-runs on a push to `main`, every night, and by hand. The nightly run is what
-publishes the docs of a new release of a package.
+The `Website` workflow builds the site and deploys it to GitHub Pages, which
+serves it at [mattebox.ch](https://mattebox.ch/). It runs on a push to
+`main`, every night, and by hand. The nightly run is what publishes the docs
+of a new release of a package.
 
 `SITE_URL` and `SITE_BASE` set the address the site is built for. The
 workflow reads both from GitHub Pages.

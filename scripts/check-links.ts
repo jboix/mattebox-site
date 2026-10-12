@@ -10,7 +10,7 @@ import { join, relative } from 'node:path';
 const dist = new URL('../dist/', import.meta.url).pathname;
 
 /** The site's origin and base, as the build used them. */
-const site = (process.env.SITE_URL || 'https://jboix.github.io').replace(/\/$/, '');
+const site = (process.env.SITE_URL || 'https://mattebox.ch').replace(/\/$/, '');
 const base = `/${(process.env.SITE_BASE || '/').replace(/^\/|\/$/g, '')}/`.replace('//', '/');
 
 /** A link found in a file. */
@@ -38,7 +38,7 @@ function filesOf(directory: string): string[] {
  * The address path a file is served at.
  *
  * @param file - The file's path from `dist/`.
- * @returns Its path from the host's root, such as `/mattebox-site/docs/engine/`.
+ * @returns Its path from the host's root, such as `/docs/engine/`.
  */
 function servedPath(file: string): string {
   return `${base}${file.replace(/(^|\/)index\.html$/, '$1')}`;

@@ -1,8 +1,8 @@
 import sitemap from '@astrojs/sitemap';
 import { defineConfig, passthroughImageService } from 'astro/config';
 
-// GitHub Pages serves the site under the repository's name. The workflow passes both.
-const site = process.env.SITE_URL || 'https://jboix.github.io';
+// The site is served from the root of mattebox.ch. The workflow passes both.
+const site = process.env.SITE_URL || 'https://mattebox.ch';
 const base = process.env.SITE_BASE || '/';
 
 export default defineConfig({
