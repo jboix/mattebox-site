@@ -2,7 +2,8 @@
 /**
  * A page of the docs: the book and version menus and the chapters on the left, the page in the
  * middle, and its headings on the right. The page says where it is three ways: the menus, the
- * trail over the title, and a banner on any version that is not the latest release.
+ * trail over the title, and a banner on any version that is not the latest release. On a narrow
+ * screen the left column moves into the header's menu.
  */
 import DocsNav from '../components/docs-nav.astro';
 import type { CollectedBook, CollectedVersion } from '../lib/docs.ts';
@@ -50,6 +51,7 @@ const needs = needsLine(version);
   current="docs"
   {...version.latest || sameInLatest === undefined ? {} : { canonicalPath: sameInLatest }}
 >
+  <DocsNav slot="menu" book={book} version={version} {...slug === undefined ? {} : { slug }} />
   <div class="container docs">
     <aside class="rail">
       <DocsNav book={book} version={version} {...slug === undefined ? {} : { slug }} />
@@ -135,7 +137,17 @@ const needs = needsLine(version);
     position: sticky;
     top: 88px;
     max-height: calc(100vh - 104px);
+  }
+
+  .outline {
     overflow-y: auto;
+  }
+
+  /* The rail does not scroll as a whole: its chapters do, so the open list of a menu above them
+     overflows the rail instead of being cut at its edge. */
+  .rail {
+    display: flex;
+    flex-direction: column;
   }
 
   .trail {
@@ -230,9 +242,7 @@ const needs = needsLine(version);
     }
 
     .rail {
-      position: static;
-      max-height: none;
-      overflow: visible;
+      display: none;
     }
   }
 </style>

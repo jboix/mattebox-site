@@ -1,7 +1,8 @@
 ---
 /**
  * The page shell: head tags, the scheme script that runs before the first paint, the header and
- * the footer. Every page renders inside it.
+ * the footer. Every page renders inside it. The `menu` slot goes to the header's narrow-screen
+ * menu, under the site's pages.
  */
 import '@fontsource/barlow/400.css';
 import '@fontsource/barlow/500.css';
@@ -72,7 +73,9 @@ const { title, tagline, description, type, current, servedAt, canonicalPath } = 
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
-    <SiteHeader {...current === undefined ? {} : { current }} />
+    <SiteHeader {...current === undefined ? {} : { current }}>
+      <slot name="menu" />
+    </SiteHeader>
     <main id="main">
       <slot />
     </main>
