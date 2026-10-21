@@ -14,10 +14,10 @@ body:
     attributes:
       label: Environment information
       description: >
-        Paste the browser (with OS version) where the bug occurs, and
-        whether it is the hosted page or a checkout (`node --version`). If
-        the bug involves a theme, a share link that reproduces it is the
-        best report. Review it for anything sensitive before posting.
+        Paste the page URL, the browser (with OS version) where the bug
+        occurs, and the theme (light or dark). State whether it is
+        mattebox.ch or a checkout (`bun --version`). Review it for anything
+        sensitive before posting.
       value: |
         <details>
 
@@ -33,9 +33,9 @@ body:
     attributes:
       label: What happened?
       description: >
-        Provide the steps that reproduce the issue: the preset, the edit,
-        the stream, the dock. The more complete the steps, the quicker the
-        report can be triaged and addressed.
+        Provide the steps that reproduce the issue: the page, the docs
+        version, what you clicked or searched. The more complete the
+        steps, the quicker the report can be triaged and addressed.
       placeholder: |
         1.
         2.
@@ -46,7 +46,7 @@ body:
     attributes:
       label: Expected result
       description: Describe what you expected to happen.
-      placeholder: The preview should follow the stylesheet edit.
+      placeholder: The link should open the chapter of the selected version.
     validations:
       required: true
   - type: checkboxes
