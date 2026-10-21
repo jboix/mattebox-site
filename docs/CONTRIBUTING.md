@@ -27,6 +27,7 @@ clones each one into `.sources/`.
 | `bun run knip`       | knip        | Dead code, unused exports and dependencies                   |
 | `bun run test`       | Bun         | The version, link and Markdown logic, and the data           |
 | `bun run build`      | Astro       | The pages build, every link resolves, every head is complete |
+| `bun run check:a11y` | axe-core    | Every built page, in both themes, against WCAG 2.2 A and AA  |
 | `bun run typecheck`  | astro check | Type errors in pages, components and scripts                 |
 
 ## Where things live

@@ -89,6 +89,7 @@ bun run docs:check
 bun run knip
 bun run test
 bun run build
+bun run check:a11y
 bun run typecheck
 ```
 

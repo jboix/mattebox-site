@@ -93,15 +93,16 @@ svg {
   cursor: pointer;
 }
 
-/* The one call to action of a page: vermilion, with charcoal text for contrast. */
+/* The one call to action of a page: vermilion, with black text. Charcoal is 4.45:1 on
+   vermilion, under the 4.5:1 of WCAG AA; black is 5.5:1. */
 .button-primary {
   background: var(--color-vermilion);
-  color: #1c1c20;
+  color: #000;
 }
 
 .button-primary:hover {
   background: #ec6a53;
-  color: #1c1c20;
+  color: #000;
 }
 
 .button-secondary {

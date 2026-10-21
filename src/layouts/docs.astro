@@ -249,6 +249,8 @@ const needs = needsLine(version);
 
 <script>
   import { addCopyButtons } from '../scripts/copy-code.ts';
+  import { focusWideTables } from '../scripts/wide-tables.ts';
 
   addCopyButtons(document.querySelectorAll<HTMLPreElement>('.prose pre'));
+  focusWideTables(document.querySelectorAll<HTMLTableElement>('.prose table'));
 </script>

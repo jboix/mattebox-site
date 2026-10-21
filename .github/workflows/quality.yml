@@ -46,6 +46,11 @@ jobs:
       # the pages, and checks every link and every page's head.
       - name: Build
         run: bun run build
+      - name: Install Chromium
+        run: bunx playwright install --with-deps chromium
+      # axe-core over every built page, in the light and the dark theme.
+      - name: Accessibility
+        run: bun run check:a11y
       - name: Typecheck
         run: bun run typecheck
 
