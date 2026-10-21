@@ -96,7 +96,8 @@ workflow reads both from GitHub Pages.
 
 See [CONTRIBUTING](docs/CONTRIBUTING.md), the
 [code of conduct](docs/CODE_OF_CONDUCT.md) and the
-[security policy](docs/SECURITY.md).
+[security policy](docs/SECURITY.md). Report an accessibility barrier as the
+[accessibility statement](docs/ACCESSIBILITY.md) describes.
 
 ## License
 
