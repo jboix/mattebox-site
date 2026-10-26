@@ -47,6 +47,12 @@ export const featureGroups: readonly FeatureGroup[] = [
         doc: ['engine', 'legacy-transport-streams'],
       },
       {
+        name: 'HEVC in MPEG-TS segments',
+        note: 'Rewrapped as an hvc1 track',
+        by: engine,
+        doc: ['engine', 'legacy-transport-streams'],
+      },
+      {
         name: 'Packed audio (AAC with ID3)',
         by: engine,
         doc: ['engine', 'legacy-transport-streams'],
@@ -90,6 +96,24 @@ export const featureGroups: readonly FeatureGroup[] = [
       { name: 'Live HLS and live DASH', by: engine, doc: ['engine', 'live-streaming'] },
       { name: 'DVR window and seeking back', by: engine, doc: ['engine', 'live-streaming'] },
       {
+        name: 'Low-latency HLS',
+        note: 'Parts, preload hints, blocking reloads and delta updates',
+        by: engine,
+        doc: ['engine', 'live-streaming'],
+      },
+      {
+        name: 'Low-latency DASH',
+        note: 'Early requests, and chunked segments appended as they arrive',
+        by: engine,
+        doc: ['engine', 'live-streaming'],
+      },
+      {
+        name: 'Live catch-up',
+        note: 'Playback speeds up or slows down to hold a target latency',
+        by: engine,
+        doc: ['engine', 'live-streaming'],
+      },
+      {
         name: 'Go to the live edge',
         by: [...engine, ...player],
         doc: ['engine', 'live-streaming'],
@@ -119,6 +143,12 @@ export const featureGroups: readonly FeatureGroup[] = [
       { name: 'Constraints and pins', by: engine, doc: ['engine', 'quality-and-abr'] },
       { name: 'Codec switching', by: engine, doc: ['engine', 'quality-and-abr'] },
       {
+        name: 'Video tracks',
+        note: 'Versions of the picture, such as a sign-language version, apart from the qualities',
+        by: engine,
+        doc: ['engine', 'audio-and-text'],
+      },
+      {
         name: 'Quality switch timing',
         note: 'At the next segment, soon, or now',
         by: engine,
@@ -143,6 +173,18 @@ export const featureGroups: readonly FeatureGroup[] = [
       { name: 'FairPlay', by: engine, doc: ['engine', 'drm'] },
       { name: 'ClearKey', by: engine, doc: ['engine', 'drm'] },
       { name: 'License renewal', by: engine, doc: ['engine', 'drm'] },
+      {
+        name: 'Your own license request',
+        note: 'An async function in place of the built-in request',
+        by: engine,
+        doc: ['engine', 'drm'],
+      },
+      {
+        name: 'License request retries',
+        note: 'With the timeouts, delays and backoff you set',
+        by: engine,
+        doc: ['engine', 'drm'],
+      },
       {
         name: 'Key sessions released on suspend',
         note: 'For a rights server that limits concurrent streams',
@@ -171,6 +213,12 @@ export const featureGroups: readonly FeatureGroup[] = [
       { name: 'WebVTT', by: engine, doc: ['engine', 'audio-and-text'] },
       { name: 'Segmented WebVTT', by: engine, doc: ['engine', 'audio-and-text'] },
       { name: 'TTML', by: engine, doc: ['engine', 'audio-and-text'] },
+      {
+        name: 'IMSC1 image subtitles',
+        note: 'PNG subtitles, drawn over the video',
+        by: engine,
+        doc: ['engine', 'audio-and-text'],
+      },
       { name: 'CEA-608 captions', by: engine, doc: ['engine', 'audio-and-text'] },
       { name: 'CEA-708 captions', by: engine, doc: ['engine', 'audio-and-text'] },
       { name: 'Forced subtitles', by: engine, doc: ['engine', 'audio-and-text'] },
@@ -407,6 +455,12 @@ export const featureGroups: readonly FeatureGroup[] = [
         doc: ['tv', 'tv'],
       },
       { name: 'Chromecast sender', by: ['cast-sender'], doc: ['cast-sender', 'casting'] },
+      {
+        name: 'DRM and signed URLs on the Chromecast',
+        note: 'The sender passes the license servers and headers, and a new token on a 401',
+        by: ['cast-sender', 'cast-receiver'],
+        doc: ['cast-sender', 'casting'],
+      },
       {
         name: 'Chromecast receiver',
         note: "A bridge to Google's receiver framework, with hooks",
