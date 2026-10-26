@@ -161,6 +161,12 @@ export const featureGroups: readonly FeatureGroup[] = [
         doc: ['engine', 'quality-and-abr'],
       },
       { name: 'Quality menu', by: player, doc: ['player', 'the-element'] },
+      {
+        name: 'Video menu',
+        note: 'The versions in the manifest, and versions at their own URLs',
+        by: player,
+        doc: ['player', 'the-element'],
+      },
     ],
   },
   {
@@ -357,6 +363,12 @@ export const featureGroups: readonly FeatureGroup[] = [
         name: 'Several sources with fallback',
         by: ['player-core', 'player'],
         doc: ['player-core', 'handlers'],
+      },
+      {
+        name: 'Source switch in place',
+        note: 'Another URL of the same programme, with the last frame and the controls held',
+        by: player,
+        doc: ['player', 'the-element'],
       },
     ],
   },
