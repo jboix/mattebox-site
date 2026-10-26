@@ -232,63 +232,21 @@ const share = Math.round((playerSize / nextSize) * 100);
 
 <script>
   import '@mattebox/player';
+  import type { MatteboxPlayerElement } from '@mattebox/player';
 
-  const player = document.querySelector<HTMLElement & { video: HTMLVideoElement }>('[data-film]');
+  const player = document.querySelector<MatteboxPlayerElement>('[data-film]');
   // The controls stay away until the visitor touches the player, by pointer or by keyboard.
   for (const type of ['pointermove', 'pointerdown', 'keydown', 'focusin']) {
     player?.addEventListener(type, () => player.removeAttribute('data-untouched'), { once: true });
   }
-  /**
-   * The picture on screen as a JPEG data URL, or null when the video has no frame yet or the
-   * canvas refuses to export it.
-   */
-  function frameOf(video: HTMLVideoElement): string | null {
-    if (video.readyState < 2 || video.videoWidth === 0) return null;
-    const canvas = document.createElement('canvas');
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    try {
-      canvas.getContext('2d')?.drawImage(video, 0, 0);
-      return canvas.toDataURL('image/jpeg', 0.9);
-    } catch {
-      return null;
-    }
-  }
-
-  // The protocol buttons load the same film over the other manifest, and keep its place.
+  // The protocol buttons load the same film over the other manifest in place. The player holds
+  // the last frame, the controls and the place through the switch.
   const buttons = document.querySelectorAll<HTMLButtonElement>('[data-protocol]');
   for (const button of buttons) {
     button.addEventListener('click', () => {
       if (player === null || button.getAttribute('aria-pressed') === 'true') return;
       for (const each of buttons) each.setAttribute('aria-pressed', String(each === button));
-      const video = player.video;
-      const at = video.currentTime;
-      const playing = !video.paused;
-      // A new source empties the video, which shows its poster until the new load has a frame.
-      // The last frame stands in as the poster, so the picture holds still instead.
-      const poster = player.getAttribute('poster');
-      const frame = frameOf(video);
-      if (frame !== null) player.setAttribute('poster', frame);
-      const restore = (): void => {
-        video.removeEventListener('seeked', restore);
-        video.removeEventListener('playing', restore);
-        if (poster === null) player.removeAttribute('poster');
-        else player.setAttribute('poster', poster);
-      };
-      player.setAttribute('type', button.dataset.type ?? '');
-      player.setAttribute('src', button.dataset.src ?? '');
-      video.addEventListener(
-        'loadedmetadata',
-        () => {
-          video.currentTime = at;
-          if (playing) video.play().catch(() => undefined);
-          // The new load has a frame at the old place once the seek ends or playback starts.
-          if (frame === null) return;
-          video.addEventListener('seeked', restore);
-          video.addEventListener('playing', restore);
-        },
-        { once: true },
-      );
+      player.switchSource({ url: button.dataset.src ?? '', type: button.dataset.type ?? '' });
     });
   }
 </script>
