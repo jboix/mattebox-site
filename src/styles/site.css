@@ -54,6 +54,12 @@ pre,
 samp {
   font-family: var(--font-mono);
   font-size: 0.88em;
+  /* JetBrains Mono joins ===, !== and => into one glyph by default. Code shows each character
+     as you type it. Both properties inherit, so every Shiki span in a block is covered. */
+  font-variant-ligatures: none;
+  font-feature-settings:
+    "liga" 0,
+    "calt" 0;
 }
 
 img,
