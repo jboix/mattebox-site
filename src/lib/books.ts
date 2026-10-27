@@ -102,7 +102,15 @@ export const books: readonly Book[] = [
     repository: 'mattebox-player',
     tagPrefix: '@mattebox/player-v',
     manifest: 'packages/player/package.json',
-    chapters: guide(playerGuide, ['01-getting-started', '03-the-element', '04-cdn']),
+    chapters: guide(playerGuide, [
+      '01-getting-started',
+      '03-the-element',
+      '04-cdn',
+      '09-connectors-and-trackers',
+      '10-languages',
+      '11-blocks-and-markers',
+      '12-fallback-and-versions',
+    ]),
   },
   {
     id: 'player-core',
@@ -126,6 +134,18 @@ export const books: readonly Book[] = [
     tagPrefix: '@mattebox/player-playlist-v',
     manifest: 'packages/playlist/package.json',
     chapters: guide(playerGuide, ['07-playlist']),
+  },
+  {
+    id: 'preferences',
+    name: 'Preferences',
+    packageName: '@mattebox/player-preferences',
+    summary:
+      "The viewer's tracks, volume, rate, quality and subtitle look, kept across programmes.",
+    group: 'Player',
+    repository: 'mattebox-player',
+    tagPrefix: '@mattebox/player-preferences-v',
+    manifest: 'packages/preferences/package.json',
+    chapters: guide(playerGuide, ['08-preferences']),
   },
   {
     id: 'diagnostics',

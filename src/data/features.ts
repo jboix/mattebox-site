@@ -314,7 +314,13 @@ export const featureGroups: readonly FeatureGroup[] = [
         name: 'Skip intro and credits',
         note: 'Markers on the seek bar and a button',
         by: player,
-        doc: ['player', 'the-element'],
+        doc: ['player', 'blocks-and-markers'],
+      },
+      {
+        name: 'Parts that must not play',
+        note: 'Playback moves past them, and the seek bar says why',
+        by: player,
+        doc: ['player', 'blocks-and-markers'],
       },
       { name: 'Chapters menu', by: player, doc: ['player', 'the-element'] },
       {
@@ -362,13 +368,13 @@ export const featureGroups: readonly FeatureGroup[] = [
       {
         name: 'Several sources with fallback',
         by: ['player-core', 'player'],
-        doc: ['player-core', 'handlers'],
+        doc: ['player', 'fallback-and-versions'],
       },
       {
         name: 'Source switch in place',
         note: 'Another URL of the same programme, with the last frame and the controls held',
         by: player,
-        doc: ['player', 'the-element'],
+        doc: ['player', 'fallback-and-versions'],
       },
     ],
   },
@@ -390,6 +396,24 @@ export const featureGroups: readonly FeatureGroup[] = [
       },
       { name: 'Styling with parts and tokens', by: player, doc: ['player', 'the-element'] },
       { name: 'Labels in any language', by: player, doc: ['player', 'the-element'] },
+      {
+        name: 'Controls in 12 languages',
+        note: "Each loaded only when a player shows it, following the page's lang",
+        by: player,
+        doc: ['player', 'languages'],
+      },
+      {
+        name: 'Why a programme does not play',
+        note: "A geoblock or an age rule, in the viewer's language, over the picture",
+        by: player,
+        doc: ['player', 'blocks-and-markers'],
+      },
+      {
+        name: 'Preferences kept across programmes and visits',
+        note: 'Tracks, volume, rate, quality and subtitle look',
+        by: ['preferences'],
+        doc: ['preferences', 'preferences'],
+      },
       { name: 'Keyboard and media keys', by: player, doc: ['player', 'the-element'] },
       {
         name: 'Screen reader names',
@@ -420,6 +444,43 @@ export const featureGroups: readonly FeatureGroup[] = [
         doc: ['player-core', 'handlers'],
       },
       { name: 'Script tags from a CDN', by: [...engine, ...player], doc: ['player', 'cdn'] },
+    ],
+  },
+  {
+    id: 'connectors',
+    title: 'Your content and your analytics',
+    summary:
+      'You load a programme by its id or its data, and you add the trackers your page needs.',
+    features: [
+      {
+        name: 'Connectors for your content API',
+        note: 'A programme id in src, which your connector resolves to what plays',
+        by: ['player-core', 'player'],
+        doc: ['player', 'connectors-and-trackers'],
+      },
+      {
+        name: 'Programme data you already have',
+        note: 'Resolved without a fetch, from your cache, your server or a fixture',
+        by: ['player-core', 'player'],
+        doc: ['player', 'connectors-and-trackers'],
+      },
+      {
+        name: 'Title, poster, chapters and markers from your API',
+        by: player,
+        doc: ['player', 'connectors-and-trackers'],
+      },
+      {
+        name: 'Trackers you add and remove',
+        note: 'The player starts and stops them at each programme; your page decides when',
+        by: player,
+        doc: ['player', 'connectors-and-trackers'],
+      },
+      {
+        name: 'Session and device ids for support',
+        note: 'Shown in the diagnostics panel and its report',
+        by: ['player', 'diagnostics'],
+        doc: ['player', 'connectors-and-trackers'],
+      },
     ],
   },
   {

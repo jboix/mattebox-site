@@ -5,15 +5,15 @@ import { featureCount, featureGroups } from '../data/features.ts';
  * documents it.
  */
 import Base from '../layouts/base.astro';
-import { collectedBooks, latestOf } from '../lib/docs.ts';
+import { collectedBooks, latestWith } from '../lib/docs.ts';
 import { link } from '../lib/url.ts';
 
 const books = collectedBooks();
-/** The address of a chapter in its book's latest version. */
+/** The address of a chapter in its book's latest version that has it. */
 const docHref = ([bookId, slug]: readonly [string, string]) => {
   const book = books.find((each) => each.id === bookId);
   if (book === undefined) throw new Error(`No book ${bookId}.`);
-  return link(`${latestOf(book).path}${slug}/`);
+  return link(`${latestWith(book, slug).path}${slug}/`);
 };
 const nameOf = (bookId: string) => books.find((each) => each.id === bookId)?.name ?? bookId;
 ---

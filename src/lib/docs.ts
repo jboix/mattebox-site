@@ -64,6 +64,21 @@ export function latestOf(book: CollectedBook): CollectedVersion {
 }
 
 /**
+ * The version a link to a chapter goes to: the latest release when it has the chapter, else the
+ * unreleased one, where a chapter added since the release already is.
+ *
+ * @param book - The book.
+ * @param slug - The chapter's slug.
+ * @returns The version.
+ */
+export function latestWith(book: CollectedBook, slug: string): CollectedVersion {
+  const latest = latestOf(book);
+  const has = (version: CollectedVersion) => version.chapters.some((each) => each.slug === slug);
+  if (has(latest)) return latest;
+  return book.versions.find((version) => version.next && has(version)) ?? latest;
+}
+
+/**
  * The versions in the order the menu lists them: the latest release, the older ones, then main.
  *
  * @param book - The book.
