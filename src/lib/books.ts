@@ -89,6 +89,7 @@ export const books: readonly Book[] = [
         '15-chapters',
         '16-trick-play',
         '17-stage-reference',
+        '21-interstitials',
       ]),
       { slug: 'architecture', source: 'docs/architecture.md' },
     ],
@@ -106,10 +107,10 @@ export const books: readonly Book[] = [
       '01-getting-started',
       '03-the-element',
       '04-cdn',
-      '09-connectors-and-trackers',
       '10-languages',
       '11-blocks-and-markers',
       '12-fallback-and-versions',
+      '13-trackers',
     ]),
   },
   {
@@ -121,7 +122,7 @@ export const books: readonly Book[] = [
     repository: 'mattebox-player',
     tagPrefix: '@mattebox/player-core-v',
     manifest: 'packages/core/package.json',
-    chapters: guide(playerGuide, ['02-handlers']),
+    chapters: guide(playerGuide, ['02-handlers', '09-connectors']),
   },
   {
     id: 'playlist',
@@ -134,6 +135,18 @@ export const books: readonly Book[] = [
     tagPrefix: '@mattebox/player-playlist-v',
     manifest: 'packages/playlist/package.json',
     chapters: guide(playerGuide, ['07-playlist']),
+  },
+  {
+    id: 'ads',
+    name: 'Ads',
+    packageName: '@mattebox/player-ads',
+    summary:
+      'Ads in the player: HLS interstitials, DASH alternative MPD, SCTE-35, VAST and VMAP, with the ad controls and the beacons.',
+    group: 'Player',
+    repository: 'mattebox-player',
+    tagPrefix: '@mattebox/player-ads-v',
+    manifest: 'packages/ads/package.json',
+    chapters: guide(playerGuide, ['14-ads']),
   },
   {
     id: 'preferences',
