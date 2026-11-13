@@ -46,7 +46,9 @@ const share = Math.round((playerSize / nextSize) * 100);
     </div>
     <div class="player">
       <div class="stage">
+        <!-- The film is CMAF over HLS and DASH, without DRM or MPEG-TS: the dual preset carries it, and the page script adds chapters and thumbnails. -->
         <mattebox-player
+          preset="dual"
           controls="custom"
           autoplay
           muted
@@ -231,8 +233,15 @@ const share = Math.round((playerSize / nextSize) * 100);
 </style>
 
 <script>
-  import '@mattebox/player';
-  import type { MatteboxPlayerElement } from '@mattebox/player';
+  import { MatteboxPlayerElement } from '@mattebox/player';
+  import chapters from 'mattebox/stages/chapters';
+  import thumbnails from 'mattebox/stages/thumbnails';
+
+  // The dual preset plays the film. These two stages add what the controls show of it: the
+  // chapters in the menu and on the seek bar, and the frame previews over the seek bar.
+  MatteboxPlayerElement.define({
+    addons: [{ name: 'film', stages: () => [chapters(), thumbnails()] }],
+  });
 
   const player = document.querySelector<MatteboxPlayerElement>('[data-film]');
   // The controls stay away until the visitor touches the player, by pointer or by keyboard.
