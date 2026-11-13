@@ -9,7 +9,7 @@
         "@fontsource/barlow": "^5.2.0",
         "@fontsource/barlow-condensed": "^5.2.0",
         "@fontsource/jetbrains-mono": "^5.2.0",
-        "@mattebox/player": "^0.13.1",
+        "@mattebox/player": "^0.14.0",
         "astro": "^7.4.0",
         "mattebox": "^0.17.1",
       },
@@ -249,7 +249,7 @@
 
     "@jridgewell/sourcemap-codec": ["@jridgewell/sourcemap-codec@1.6.0", "", {}, "sha512-T7jf+5zgsZHwNJ4lvQ7/aezbyk0nNX+zJVWpmHA7VYsEx7a7qr5Rg5IbtJFqkgze5Y2sruq1RUY8Q837Od7iFw=="],
 
-    "@mattebox/player": ["@mattebox/player@0.13.1", "", { "dependencies": { "@mattebox/player-core": "^0.9.0" }, "peerDependencies": { "mattebox": "^0.17.1" } }, "sha512-Vb4OStSEQTCNeLQQ8PLUXUW+rVSK2FXr+3XntsYum6yrNN1JU67Y2+/rAJ6uLhSrT79Shjd1yIU+OWeGJscjEg=="],
+    "@mattebox/player": ["@mattebox/player@0.14.0", "", { "dependencies": { "@mattebox/player-core": "^0.9.0" }, "peerDependencies": { "mattebox": "^0.17.1" } }, "sha512-P1FHLC4lzebXvL3e4NgXEX5TYgieHKPWkj1KAxnVfKhcitOR0mS+EuUPDJJMJ8zzE2dh/BWXw1jM3PEENSVkLw=="],
 
     "@mattebox/player-core": ["@mattebox/player-core@0.9.0", "", { "peerDependencies": { "mattebox": "^0.17.0" } }, "sha512-maZhSmUl1HXmWYJDledsajnwvkO9TksPyKRR332Ru4xpZwkuUdc/AmJS9uojUM1A4TYic2Ne18iqtFhmTigmAQ=="],
 
