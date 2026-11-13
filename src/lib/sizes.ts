@@ -10,6 +10,8 @@ export interface Sizes {
   readonly presets: SizeChart;
   /** The player with its engine against the other players with theirs. */
   readonly player: SizeChart;
+  /** The player with the engine's `hls` preset against video.js 10 with SPF, its own HLS engine. */
+  readonly hls: SizeChart;
 }
 
 /**

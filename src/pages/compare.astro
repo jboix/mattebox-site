@@ -1,34 +1,218 @@
 ---
 /**
- * The comparison: the licence and the price of each player, and the measured sizes.
+ * The comparison: what each player states it supports, beside the bytes it costs, then the
+ * smaller comparisons the home page does not show, and the licence and price of each player.
  */
 import SizeBars from '../components/size-bars.astro';
 import { compared, comparedOn } from '../data/compare.ts';
+import { featureGroups } from '../data/features.ts';
+import { matrix, matrixCheckedOn, type RivalId, rivals, type Support } from '../data/matrix.ts';
 import Base from '../layouts/base.astro';
+import { chapterHref, collectedBooks } from '../lib/docs.ts';
 import { ours, readSizes } from '../lib/sizes.ts';
 import { link } from '../lib/url.ts';
 
 const sizes = readSizes();
+const books = collectedBooks();
 const yes = (value: boolean) => (value ? 'Yes' : 'No');
+
+const features = featureGroups.flatMap((group) => group.features);
+/** Mattebox's cell links to the docs section of the feature the row names. */
+const oursHref = (name: string) => {
+  const feature = features.find((each) => each.name === name);
+  if (feature === undefined) throw new Error(`No feature named ${name}.`);
+  return chapterHref(books, feature.doc);
+};
+const rows = matrix.flatMap((group) => group.rows);
+/** How a cell reads. */
+const words: Record<Support, string> = {
+  yes: 'Yes',
+  partial: 'Partly',
+  no: 'No',
+  unstated: 'Not stated',
+};
+/** How many rows a player answers with `support`. */
+const count = (id: RivalId, support: Support) =>
+  rows.filter((row) => row.cells[id].support === support).length;
+/** A player's size, read off the player chart by its row's label. */
+const sizeOf = (label: string) => {
+  const row = sizes.player.rows.find((each) => each.label === label);
+  if (row === undefined) throw new Error(`The player chart has no row "${label}".`);
+  return row.kilobytes;
+};
+const oursKb = ours(sizes.player);
+const hlsRival = sizes.hls.rows[1];
 ---
 
 <Base
   title="Compare"
-  description="Mattebox against hls.js, dash.js, Shaka Player, video.js, Bitmovin and THEOplayer: licence, price, protocols and measured bundle size."
+  description="Mattebox against Shaka Player, video.js 10, Bitmovin and THEOplayer: what each states it supports, the measured bundle sizes, licence and price."
   current="compare"
 >
   <div class="container section">
     <p class="eyebrow">Compare</p>
-    <h1 class="section-title">Smaller, and free</h1>
+    <h1 class="section-title">More per kilobyte</h1>
     <p class="lede">
-      Three things you can check yourself: what each player costs, what it plays, and how many
-      bytes your viewers download before the first frame.
+      What each player states it supports, beside what it costs your viewers in bytes. Every cell
+      links to its source.
     </p>
+
+    <section class="block">
+      <h2>Features and size</h2>
+      <p>
+        {rows.length} features of Mattebox, and what each other player states about them. Mattebox
+        has all {rows.length} in {oursKb.toFixed(1)} KB.
+      </p>
+      <div class="scroll">
+        <table class="matrix">
+          <thead>
+            <tr>
+              <th scope="col">Feature</th>
+              <th scope="col" class="ours">Mattebox</th>
+              {
+                rivals.map((rival) => (
+                  <th scope="col">
+                    {rival.name}
+                    <span class="version mono">v{rival.version}</span>
+                  </th>
+                ))
+              }
+            </tr>
+          </thead>
+          {
+            matrix.map((group) => (
+              <tbody>
+                <tr class="group">
+                  <th scope="colgroup" colspan={rivals.length + 2}>
+                    {group.title}
+                  </th>
+                </tr>
+                {group.rows.map((row) => (
+                  <tr>
+                    <th scope="row">{row.label}</th>
+                    <td class="ours">
+                      <a class="mark yes" href={oursHref(row.feature)}>
+                        Yes
+                      </a>
+                    </td>
+                    {rivals.map((rival) => {
+                      const cell = row.cells[rival.id];
+                      return (
+                        <td>
+                          {cell.source === undefined ? (
+                            <span class:list={['mark', cell.support]}>{words[cell.support]}</span>
+                          ) : (
+                            <a class:list={['mark', cell.support]} href={cell.source}>
+                              {words[cell.support]}
+                            </a>
+                          )}
+                          {cell.note !== undefined && <span class="cell-note">{cell.note}</span>}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            ))
+          }
+          <tfoot>
+            <tr>
+              <th scope="row">Stated in full</th>
+              <td class="ours">{rows.length} of {rows.length}</td>
+              {
+                rivals.map((rival) => (
+                  <td>
+                    {count(rival.id, 'yes')} of {rows.length}
+                    {count(rival.id, 'partial') > 0 && (
+                      <span class="cell-note">{count(rival.id, 'partial')} partly</span>
+                    )}
+                  </td>
+                ))
+              }
+            </tr>
+            <tr>
+              <th scope="row">The whole player, min+gzip</th>
+              <td class="ours size">{oursKb.toFixed(1)} KB</td>
+              {
+                rivals.map((rival) => (
+                  <td class="size">{sizeOf(rival.chartLabel).toFixed(1)} KB</td>
+                ))
+              }
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+      <p class="note">
+        Checked on {matrixCheckedOn}. "Not stated" means the project's docs and source say nothing
+        either way. A video.js 10 cell counts what its media elements give through SPF, hls.js and
+        dash.js, the build the size measures. The sizes are the{' '}
+        <a href="https://github.com/jboix/mattebox-player/blob/main/scripts/size-chart.mjs"
+          >player chart</a
+        >, the one on the <a href={link('')}>home page</a>.
+      </p>
+    </section>
+
+    <section class="block">
+      <h2>Against video.js 10's own engine</h2>
+      <p>
+        Video.js 10 has its own HLS engine, SPF. It plays HLS with fMP4 segments and{' '}
+        <a
+          href="https://github.com/videojs/video.js/blob/main/packages/spf/src/playback/engines/hls-video.ts"
+          >DRM</a
+        >, on demand and live, without MPEG-TS, low-latency HLS or DASH. The engine's{' '}
+        <code>hls-drm</code> preset has the same reach. Mattebox is {ours(sizes.hls).toFixed(1)} KB{
+          hlsRival !== undefined && `, video.js 10 ${hlsRival.kilobytes.toFixed(1)} KB`
+        }. Both rows are the HTML player with its default skin.
+      </p>
+      <SizeBars chart={sizes.hls} first="Mattebox player" />
+      <p class="note">
+        <a href="https://videojs.org">videojs.org</a> states a smaller figure. Its{' '}
+        <a href="https://github.com/videojs/video.js/blob/main/site/scripts/snapshot-bundle-sizes.mjs"
+          >snapshot script</a
+        >
+        measures the React preset with a plain <code>&lt;video&gt;</code>, so the figure plays no HLS
+        and no DASH. The{' '}
+        <a href="https://github.com/videojs/video.js/blob/main/.github/scripts/bundle-size.js"
+          >measurement</a
+        >
+        leaves out React and compresses with brotli at quality 11. The charts here use gzip at level
+        9.
+      </p>
+    </section>
+
+    <section class="block">
+      <h2>Or less, if you need less</h2>
+      <p>
+        The engine is a kernel and the stages you add. A preset is a ready-made list. An HLS-only
+        page downloads the first rows, and nothing of DASH or DRM.
+      </p>
+      <SizeBars chart={sizes.presets} />
+      <p class="note">
+        See <a href={link('docs/engine/presets-and-stages/')}>presets and stages</a> for what each
+        preset holds.
+      </p>
+    </section>
+
+    <section class="block">
+      <h2>The engine alone</h2>
+      <p>
+        The part that reads the stream, against the engines other players are built on. Mattebox
+        with every stage is {ours(sizes.engine).toFixed(1)} KB.
+      </p>
+      <SizeBars chart={sizes.engine} first="Mattebox" />
+      <p class="note">
+        The sizes come from the scripts in the{' '}
+        <a href="https://github.com/jboix/mattebox/blob/main/scripts/size-chart.mjs">engine</a> and{' '}
+        <a href="https://github.com/jboix/mattebox-player/blob/main/scripts/size-chart.mjs">player</a>
+        repositories. Each one installs the other players from npm at the version shown and bundles
+        them the same way, so you can run it and get the same numbers.
+      </p>
+    </section>
 
     <section class="block">
       <h2>Licence and price</h2>
       <div class="scroll">
-        <table>
+        <table class="licences">
           <thead>
             <tr>
               <th scope="col">Player</th>
@@ -62,41 +246,6 @@ const yes = (value: boolean) => (value ? 'Yes' : 'No');
         Dolby publish their own prices, so this table does not repeat them.
       </p>
     </section>
-
-    <section class="block">
-      <h2>The whole player</h2>
-      <p>
-        A player with its interface and both protocols. Mattebox is {ours(sizes.player).toFixed(1)} KB
-        with every stage of the engine inside.
-      </p>
-      <SizeBars chart={sizes.player} first="Mattebox player" />
-    </section>
-
-    <section class="block">
-      <h2>The engine alone</h2>
-      <p>
-        The part that reads the stream. Mattebox with every stage is {ours(sizes.engine).toFixed(1)} KB.
-      </p>
-      <SizeBars chart={sizes.engine} first="Mattebox" />
-    </section>
-
-    <section class="block">
-      <h2>Or less, if you need less</h2>
-      <p>
-        The engine is a kernel and the stages you add. A preset is a ready-made list. An HLS-only
-        page downloads the first rows, and nothing of DASH or DRM.
-      </p>
-      <SizeBars chart={sizes.presets} />
-      <p class="note">
-        The sizes come from the scripts in the
-        <a href="https://github.com/jboix/mattebox/blob/main/scripts/size-chart.mjs">engine</a> and
-        <a href="https://github.com/jboix/mattebox-player/blob/main/scripts/size-chart.mjs">player</a>
-        repositories. Each one installs the other players from npm at the version shown and bundles
-        them the same way, so you can run it and get the same numbers. See
-        <a href={link('docs/engine/presets-and-stages/')}>presets and stages</a> for what each
-        preset holds.
-      </p>
-    </section>
   </div>
 </Base>
 
@@ -117,8 +266,15 @@ const yes = (value: boolean) => (value ? 'Yes' : 'No');
 
   table {
     width: 100%;
-    min-width: 720px;
     border-collapse: collapse;
+  }
+
+  .licences {
+    min-width: 720px;
+  }
+
+  .matrix {
+    min-width: 860px;
   }
 
   th,
@@ -126,6 +282,7 @@ const yes = (value: boolean) => (value ? 'Yes' : 'No');
     padding: 12px 16px 12px 0;
     border-bottom: 1px solid var(--color-border);
     text-align: left;
+    vertical-align: top;
   }
 
   thead th {
@@ -133,20 +290,99 @@ const yes = (value: boolean) => (value ? 'Yes' : 'No');
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--color-ink-secondary);
+    vertical-align: bottom;
   }
 
   tbody th {
     font-weight: 600;
   }
 
-  .ours th,
-  .ours td {
+  .version {
+    display: block;
+    margin-top: 4px;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .matrix td,
+  .matrix th {
+    padding: 8px 12px 8px 0;
+  }
+
+  .matrix tfoot th,
+  .matrix tfoot td {
+    border-top: 2px solid var(--color-ink);
+    font-weight: 600;
+  }
+
+  /* The feature stays in view while a narrow screen scrolls the players sideways. */
+  .matrix th[scope='row'],
+  .matrix thead th:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background: var(--color-ground);
+  }
+
+  .matrix .group th {
+    padding-top: 24px;
+    font: 500 0.6875rem / 1.2 var(--font-mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-ink-secondary);
+  }
+
+  .matrix tbody th[scope='row'] {
+    font-weight: 500;
+  }
+
+  .matrix .ours,
+  .licences .ours th,
+  .licences .ours td {
     background: var(--color-accent-soft);
+  }
+
+  .matrix .ours {
+    padding-left: 12px;
+  }
+
+  .licences .ours th,
+  .licences .ours td {
     box-shadow: inset 0 -2px 0 var(--color-vermilion);
   }
 
-  .ours th {
+  .licences .ours th {
     padding-left: 12px;
+  }
+
+  .mark {
+    font-weight: 600;
+  }
+
+  .mark.yes {
+    color: var(--color-ok-ink);
+  }
+
+  .mark.partial {
+    color: var(--color-ink);
+  }
+
+  .mark.no,
+  .mark.unstated {
+    color: var(--color-ink-secondary);
+    font-weight: 400;
+  }
+
+  .cell-note {
+    display: block;
+    font-size: 0.8125rem;
+    line-height: 1.35;
+    color: var(--color-ink-secondary);
+  }
+
+  .matrix .size {
+    font-family: var(--font-mono);
+    white-space: nowrap;
   }
 
   .note {
