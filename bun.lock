@@ -9,9 +9,9 @@
         "@fontsource/barlow": "^5.2.0",
         "@fontsource/barlow-condensed": "^5.2.0",
         "@fontsource/jetbrains-mono": "^5.2.0",
-        "@mattebox/player": "^0.13.0",
+        "@mattebox/player": "^0.13.1",
         "astro": "^7.4.0",
-        "mattebox": "^0.17.0",
+        "mattebox": "^0.17.1",
       },
       "devDependencies": {
         "@astrojs/check": "^0.9.10",
@@ -249,7 +249,7 @@
 
     "@jridgewell/sourcemap-codec": ["@jridgewell/sourcemap-codec@1.6.0", "", {}, "sha512-T7jf+5zgsZHwNJ4lvQ7/aezbyk0nNX+zJVWpmHA7VYsEx7a7qr5Rg5IbtJFqkgze5Y2sruq1RUY8Q837Od7iFw=="],
 
-    "@mattebox/player": ["@mattebox/player@0.13.0", "", { "dependencies": { "@mattebox/player-core": "^0.9.0" }, "peerDependencies": { "mattebox": "^0.17.0" } }, "sha512-ggZlJzj1bFJZwufUjcUdp/jefV8vWHE/J218ZG6izkarPL4EUgLONFfHvaC3oyS5KMTfvo7XKwgvgSaONHNz8Q=="],
+    "@mattebox/player": ["@mattebox/player@0.13.1", "", { "dependencies": { "@mattebox/player-core": "^0.9.0" }, "peerDependencies": { "mattebox": "^0.17.1" } }, "sha512-Vb4OStSEQTCNeLQQ8PLUXUW+rVSK2FXr+3XntsYum6yrNN1JU67Y2+/rAJ6uLhSrT79Shjd1yIU+OWeGJscjEg=="],
 
     "@mattebox/player-core": ["@mattebox/player-core@0.9.0", "", { "peerDependencies": { "mattebox": "^0.17.0" } }, "sha512-maZhSmUl1HXmWYJDledsajnwvkO9TksPyKRR332Ru4xpZwkuUdc/AmJS9uojUM1A4TYic2Ne18iqtFhmTigmAQ=="],
 
@@ -777,7 +777,7 @@
 
     "markdown-table": ["markdown-table@3.0.4", "", {}, "sha512-wiYz4+JrLyb/DqW2hkFJxP7Vd7JuTDm77fvbM8VfEQdmSMqcImWeeRbHwZjBjIFki/VaMK2BhFi7oUUZeM5bqw=="],
 
-    "mattebox": ["mattebox@0.17.0", "", {}, "sha512-zs/GJJ1aWXMdR8cUEgyekdCGbMzgnjy09PEQM+ItRf0YEV0xnKnxXlsCaWM+J4iIvHwr4Jnk7ALHW5haZsUtkA=="],
+    "mattebox": ["mattebox@0.17.1", "", {}, "sha512-WvCULsBRoljqPuhtdei0qesEpUwbDKKsjoWQ4YqvdL+I8ATaYFJocUrqq2ZeO2jxFoJT6lggBqMoPxs8tazlXw=="],
 
     "mdast-util-find-and-replace": ["mdast-util-find-and-replace@3.0.3", "", { "dependencies": { "@types/mdast": "^4.0.0", "escape-string-regexp": "^5.0.0", "unist-util-is": "^6.0.0", "unist-util-visit-parents": "^6.0.0" } }, "sha512-xPgpDNl0/OXHsI7TlaIs22lWnH3KlpvZdXG1ET/m/YT2Hhdkx8lJV4kLphE6l9simyM4KPDFBwas08BgEob6Jw=="],
 
