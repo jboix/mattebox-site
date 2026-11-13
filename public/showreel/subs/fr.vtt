@@ -11,7 +11,7 @@ HLS. DASH. Un seul moteur.
 Qualité adaptative, jusqu’à la 4K.
 
 00:00:16.200 --> 00:00:19.800
-En direct, avec une fenêtre DVR.
+En direct, avec une fenêtre DVR et une faible latence.
 
 00:00:20.200 --> 00:00:23.800
 Avance rapide et survol sur les I-frames.
@@ -23,10 +23,19 @@ DRM pour tous les systèmes de clés.
 Sous-titres et pistes audio.
 
 00:00:32.200 --> 00:00:35.800
-Chromecast, AirPlay et téléviseurs.
+Publicités du flux : interstitiels, SCTE-35, VAST et VMAP.
 
 00:00:36.200 --> 00:00:39.800
-Moitié moins lourd.
+Listes de lecture, avec l’élément suivant prêt.
 
 00:00:40.200 --> 00:00:43.800
+Chromecast, AirPlay et téléviseurs.
+
+00:00:44.200 --> 00:00:47.800
+Votre API et vos statistiques, connectées.
+
+00:00:48.200 --> 00:00:51.800
+Le lecteur complet en 124 Ko. Le suivant le plus léger : 330 Ko.
+
+00:00:52.200 --> 00:00:55.800
 Mattebox. Open source. Licence MIT.

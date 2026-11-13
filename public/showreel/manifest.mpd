@@ -5,7 +5,7 @@
 	xsi:schemaLocation="urn:mpeg:DASH:schema:MPD:2011 http://standards.iso.org/ittf/PubliclyAvailableStandards/MPEG-DASH_schema_files/DASH-MPD.xsd"
 	profiles="urn:mpeg:dash:profile:isoff-live:2011"
 	type="static"
-	mediaPresentationDuration="PT44.0S"
+	mediaPresentationDuration="PT56.0S"
 	maxSegmentDuration="PT2.0S"
 	minBufferTime="PT4.0S">
 	<ProgramInformation>
