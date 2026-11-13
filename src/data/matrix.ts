@@ -13,7 +13,7 @@
 export type Support = 'yes' | 'partial' | 'no' | 'unstated';
 
 /** One player's answer for one feature. */
-interface Cell {
+export interface Cell {
   readonly support: Support;
   /** What the answer covers, when it is not the whole feature. */
   readonly note?: string;
@@ -37,8 +37,13 @@ export type RivalId = 'shaka' | 'videojs' | 'bitmovin' | 'theoplayer';
 /** One row: a feature, as Mattebox lists it, and each other player's answer. */
 interface MatrixRow {
   readonly label: string;
-  /** The name of the feature in `features.ts`, which gives Mattebox's cell its link. */
-  readonly feature: string;
+  /**
+   * The name of the feature in `features.ts`, which gives Mattebox's cell its link. A row without
+   * one is a feature Mattebox does not have.
+   */
+  readonly feature?: string;
+  /** What Mattebox's own cell adds, such as how many languages. */
+  readonly oursNote?: string;
   readonly cells: Readonly<Record<RivalId, Cell>>;
 }
 
@@ -46,6 +51,13 @@ interface MatrixRow {
 export interface MatrixGroup {
   readonly title: string;
   readonly rows: readonly MatrixRow[];
+}
+
+/** A feature another player states that Mattebox does not have. */
+interface Extra {
+  readonly name: string;
+  /** Where the player's project states it. */
+  readonly source: string;
 }
 
 /** When the cells were last checked against their sources. */
@@ -219,10 +231,33 @@ export const matrix: readonly MatrixGroup[] = [
           },
         },
       },
+      {
+        label: 'Live catch-up by playback rate',
+        feature: 'Live catch-up',
+        cells: {
+          shaka: {
+            support: 'yes',
+            note: 'Off by default',
+            source:
+              'https://github.com/shaka-project/shaka-player/blob/v5.3.0/externs/shaka/player.js#L1932-L1960',
+          },
+          videojs: { support: 'unstated' },
+          bitmovin: {
+            support: 'yes',
+            source:
+              'https://cdn.bitmovin.com/player/web/8/docs/interfaces/Core.LowLatencySyncConfig.html',
+          },
+          theoplayer: {
+            support: 'yes',
+            source:
+              'https://optiview.dolby.com/docs/theoplayer/v11/api-reference/web/interfaces/LatencyConfiguration.html',
+          },
+        },
+      },
     ],
   },
   {
-    title: 'DRM',
+    title: 'DRM and quality',
     rows: [
       {
         label: 'Widevine',
@@ -301,10 +336,24 @@ export const matrix: readonly MatrixGroup[] = [
           },
         },
       },
+      {
+        label: 'HDR only where the screen shows it',
+        feature: 'HDR by capability',
+        cells: {
+          shaka: {
+            support: 'yes',
+            source:
+              'https://github.com/shaka-project/shaka-player/blob/v5.3.0/externs/shaka/player.js#L3385-L3390',
+          },
+          videojs: { support: 'unstated' },
+          bitmovin: { support: 'unstated' },
+          theoplayer: { support: 'unstated' },
+        },
+      },
     ],
   },
   {
-    title: 'Subtitles and captions',
+    title: 'Subtitles, captions and audio',
     rows: [
       {
         label: 'TTML and IMSC1',
@@ -376,6 +425,39 @@ export const matrix: readonly MatrixGroup[] = [
           },
         },
       },
+      {
+        label: 'Forced subtitles',
+        feature: 'Forced subtitles',
+        cells: {
+          shaka: {
+            support: 'yes',
+            source:
+              'https://github.com/shaka-project/shaka-player/blob/v5.3.0/externs/shaka/player.js#L2579-L2590',
+          },
+          videojs: { support: 'unstated' },
+          bitmovin: {
+            support: 'yes',
+            source:
+              'https://cdn.bitmovin.com/player/web/8/docs/interfaces/Core.PlaybackConfig.html',
+          },
+          theoplayer: {
+            support: 'partial',
+            note: 'DASH only',
+            source:
+              'https://optiview.dolby.com/docs/theoplayer/v11/api-reference/web/interfaces/TextTrack.html',
+          },
+        },
+      },
+      {
+        label: 'Localized track names',
+        feature: 'Localized track names',
+        cells: {
+          shaka: { support: 'unstated' },
+          videojs: { support: 'unstated' },
+          bitmovin: { support: 'unstated' },
+          theoplayer: { support: 'unstated' },
+        },
+      },
     ],
   },
   {
@@ -406,6 +488,20 @@ export const matrix: readonly MatrixGroup[] = [
             source:
               'https://optiview.dolby.com/docs/theoplayer/how-to-guides/web/text-tracks/preview-thumbnails/',
           },
+        },
+      },
+      {
+        label: 'Frame previews from the stream',
+        feature: 'Frame previews from the stream',
+        cells: {
+          shaka: {
+            support: 'partial',
+            note: 'From MJPEG I-frame playlists only',
+            source: 'https://github.com/shaka-project/shaka-player/blob/v5.3.0/README.md#L376-L382',
+          },
+          videojs: { support: 'unstated' },
+          bitmovin: { support: 'unstated' },
+          theoplayer: { support: 'unstated' },
         },
       },
       {
@@ -444,6 +540,26 @@ export const matrix: readonly MatrixGroup[] = [
             support: 'yes',
             source: 'https://github.com/shaka-project/shaka-player/blob/v5.3.0/lib/player.js#L5918',
           },
+          videojs: { support: 'unstated' },
+          bitmovin: { support: 'unstated' },
+          theoplayer: { support: 'unstated' },
+        },
+      },
+      {
+        label: 'Skip intro and credits',
+        feature: 'Skip intro and credits',
+        cells: {
+          shaka: { support: 'unstated' },
+          videojs: { support: 'unstated' },
+          bitmovin: { support: 'unstated' },
+          theoplayer: { support: 'unstated' },
+        },
+      },
+      {
+        label: 'Blocked ranges',
+        feature: 'Blocked ranges',
+        cells: {
+          shaka: { support: 'unstated' },
           videojs: { support: 'unstated' },
           bitmovin: { support: 'unstated' },
           theoplayer: { support: 'unstated' },
@@ -635,10 +751,37 @@ export const matrix: readonly MatrixGroup[] = [
           },
         },
       },
+      {
+        label: 'Ad breaks on the seek bar',
+        feature: 'Ad breaks on the seek bar',
+        cells: {
+          shaka: {
+            support: 'yes',
+            source:
+              'https://github.com/shaka-project/shaka-player/blob/v5.3.0/ui/seek_bar.js#L49-L54',
+          },
+          videojs: {
+            support: 'partial',
+            note: 'Cue markers, no ads',
+            source:
+              'https://github.com/videojs/video.js/blob/main/site/src/content/docs/reference/components/time-slider-markers.mdx',
+          },
+          bitmovin: {
+            support: 'partial',
+            note: 'Markers added by hand',
+            source: 'https://developer.bitmovin.com/playback/docs/timeline-markers',
+          },
+          theoplayer: {
+            support: 'yes',
+            note: 'In Open Video UI',
+            source: 'https://github.com/THEOplayer/web-ui/blob/main/CHANGELOG.md',
+          },
+        },
+      },
     ],
   },
   {
-    title: 'Around the player',
+    title: 'Playlist, TV and casting',
     rows: [
       {
         label: 'Playlist with next and previous',
@@ -661,6 +804,30 @@ export const matrix: readonly MatrixGroup[] = [
             note: 'An up next page, no queue',
             source:
               'https://optiview.dolby.com/docs/theoplayer/how-to-guides/web/miscellaneous/up-next/',
+          },
+        },
+      },
+      {
+        label: 'Up next card with a countdown',
+        feature: 'Up next card with a countdown',
+        cells: {
+          shaka: { support: 'unstated' },
+          videojs: {
+            support: 'no',
+            note: 'The docs state no playlist support',
+            source:
+              'https://github.com/videojs/video.js/blob/main/site/src/content/docs/guides/migrate-from-video-js-8.mdx',
+          },
+          bitmovin: {
+            support: 'partial',
+            note: 'Recommendations, no countdown',
+            source:
+              'https://github.com/bitmovin/bitmovin-player-ui/blob/v4.23.1/src/ts/components/overlays/RecommendationOverlay.ts',
+          },
+          theoplayer: {
+            support: 'yes',
+            note: 'In the older UI',
+            source: 'https://optiview.dolby.com/docs/theoplayer/examples/ui/up-next/',
           },
         },
       },
@@ -692,6 +859,28 @@ export const matrix: readonly MatrixGroup[] = [
         },
       },
       {
+        label: 'Remote control navigation',
+        feature: 'Remote control navigation',
+        cells: {
+          shaka: { support: 'unstated' },
+          videojs: {
+            support: 'no',
+            note: 'The docs list it as missing',
+            source:
+              'https://github.com/videojs/video.js/blob/main/site/src/content/docs/guides/migrate-from-video-js-8.mdx',
+          },
+          bitmovin: {
+            support: 'yes',
+            source: 'https://github.com/bitmovin/bitmovin-player-ui/blob/v4.23.1/CHANGELOG.md',
+          },
+          theoplayer: {
+            support: 'yes',
+            note: 'In Open Video UI',
+            source: 'https://github.com/THEOplayer/web-ui/blob/main/CHANGELOG.md',
+          },
+        },
+      },
+      {
         label: 'Chromecast sender',
         feature: 'Chromecast sender',
         cells: {
@@ -714,6 +903,33 @@ export const matrix: readonly MatrixGroup[] = [
             support: 'yes',
             source:
               'https://optiview.dolby.com/docs/theoplayer/how-to-guides/web/cast/chromecast/enable-chromecast-on-the-sender/',
+          },
+        },
+      },
+      {
+        label: 'Chromecast receiver',
+        feature: 'Chromecast receiver',
+        cells: {
+          shaka: {
+            support: 'yes',
+            source:
+              'https://github.com/shaka-project/shaka-player/blob/v5.3.0/lib/cast/cast_receiver.js#L22-L28',
+          },
+          videojs: {
+            support: 'no',
+            note: 'A sender only',
+            source:
+              'https://github.com/videojs/video.js/blob/main/site/src/content/docs/guides/casting.mdx',
+          },
+          bitmovin: {
+            support: 'partial',
+            note: 'A hosted receiver app',
+            source: 'https://developer.bitmovin.com/playback/docs/how-to-enable-chromecast-support',
+          },
+          theoplayer: {
+            support: 'yes',
+            source:
+              'https://optiview.dolby.com/docs/theoplayer/how-to-guides/web/cast/chromecast/introduction/',
           },
         },
       },
@@ -743,6 +959,107 @@ export const matrix: readonly MatrixGroup[] = [
           },
         },
       },
+    ],
+  },
+  {
+    title: 'Building on it',
+    rows: [
+      {
+        label: 'A framework-free custom element',
+        feature: 'Framework-free custom element',
+        cells: {
+          shaka: { support: 'unstated' },
+          videojs: {
+            support: 'yes',
+            source: 'https://github.com/videojs/video.js/blob/main/packages/html/README.md',
+          },
+          bitmovin: { support: 'unstated' },
+          theoplayer: {
+            support: 'yes',
+            note: 'Open Video UI',
+            source: 'https://github.com/THEOplayer/web-ui',
+          },
+        },
+      },
+      {
+        label: 'Controls translated',
+        feature: 'Controls in 12 languages',
+        oursNote: '12 languages',
+        cells: {
+          shaka: {
+            support: 'yes',
+            note: '48 languages',
+            source: 'https://github.com/shaka-project/shaka-player/tree/v5.3.0/ui/locales',
+          },
+          videojs: {
+            support: 'yes',
+            note: 'More than 50 languages',
+            source:
+              'https://github.com/videojs/video.js/blob/main/site/src/content/docs/guides/internationalization.mdx',
+          },
+          bitmovin: {
+            support: 'yes',
+            note: '6 languages',
+            source:
+              'https://github.com/bitmovin/bitmovin-player-ui/tree/v4.23.1/src/ts/localization/languages',
+          },
+          theoplayer: {
+            support: 'yes',
+            note: '27 languages, in the older UI',
+            source: 'https://optiview.dolby.com/docs/theoplayer/ui/web/change-ui-language/',
+          },
+        },
+      },
+      {
+        label: 'Viewer preferences remembered',
+        feature: 'Persistent viewer preferences',
+        cells: {
+          shaka: { support: 'unstated' },
+          videojs: {
+            support: 'no',
+            note: 'The docs state they are not kept',
+            source:
+              'https://github.com/videojs/video.js/blob/main/site/src/content/docs/guides/migrate-from-video-js-8.mdx',
+          },
+          bitmovin: {
+            support: 'partial',
+            note: 'Volume, speed and subtitle style, not tracks',
+            source:
+              'https://github.com/bitmovin/bitmovin-player-ui/blob/v4.23.1/src/ts/utils/UIPreferencesManager.ts',
+          },
+          theoplayer: {
+            support: 'partial',
+            note: 'Volume only',
+            source:
+              'https://optiview.dolby.com/docs/theoplayer/v11/api-reference/web/interfaces/PlayerConfiguration.html',
+          },
+        },
+      },
+      {
+        label: 'Connectors to your content API',
+        feature: 'Content API connectors',
+        cells: {
+          shaka: { support: 'unstated' },
+          videojs: { support: 'unstated' },
+          bitmovin: { support: 'unstated' },
+          theoplayer: { support: 'unstated' },
+        },
+      },
+      {
+        label: 'A plug-in API for analytics trackers',
+        feature: 'Analytics trackers',
+        cells: {
+          shaka: { support: 'unstated' },
+          videojs: {
+            support: 'partial',
+            note: 'Mux Data and GA4 extensions only',
+            source:
+              'https://github.com/videojs/video.js/blob/main/site/src/content/docs/guides/migrate-from-video-js-8.mdx',
+          },
+          bitmovin: { support: 'unstated' },
+          theoplayer: { support: 'unstated' },
+        },
+      },
       {
         label: 'Quality of experience metrics',
         feature: 'Quality of experience metrics',
@@ -769,6 +1086,229 @@ export const matrix: readonly MatrixGroup[] = [
           },
         },
       },
+      {
+        label: 'A diagnostics panel in the player',
+        feature: 'A diagnostics panel in the player',
+        cells: {
+          shaka: {
+            support: 'yes',
+            source:
+              'https://github.com/shaka-project/shaka-player/blob/v5.3.0/docs/tutorials/ui-customization.md#L155',
+          },
+          videojs: { support: 'unstated' },
+          bitmovin: {
+            support: 'yes',
+            source:
+              'https://github.com/bitmovin/bitmovin-player-ui/blob/v4.23.1/src/ts/utils/PlayerInsightsProvider.ts',
+          },
+          theoplayer: {
+            support: 'yes',
+            note: 'In Open Video UI',
+            source: 'https://optiview.dolby.com/docs/theoplayer/examples/ui/debug-display/',
+          },
+        },
+      },
+      {
+        label: 'Trace record and replay',
+        feature: 'Trace replay',
+        cells: {
+          shaka: { support: 'unstated' },
+          videojs: { support: 'unstated' },
+          bitmovin: { support: 'unstated' },
+          theoplayer: { support: 'unstated' },
+        },
+      },
     ],
   },
 ];
+
+/**
+ * Features each player states that Mattebox does not have, checked against Mattebox's own
+ * repositories. Each links to where the player's project states it.
+ */
+export const extras: Readonly<Record<RivalId, readonly Extra[]>> = {
+  shaka: [
+    {
+      name: 'Offline download and playback',
+      source: 'https://github.com/shaka-project/shaka-player/blob/v5.3.0/README.md#L14-L16',
+    },
+    {
+      name: 'Google IMA client-side ads',
+      source: 'https://github.com/shaka-project/shaka-player/blob/v5.3.0/README.md#L385-L396',
+    },
+    {
+      name: 'Google IMA DAI server-side ads',
+      source: 'https://github.com/shaka-project/shaka-player/blob/v5.3.0/README.md#L385-L396',
+    },
+    {
+      name: 'AWS MediaTailor ads',
+      source: 'https://github.com/shaka-project/shaka-player/blob/v5.3.0/README.md#L385-L396',
+    },
+    {
+      name: 'VR and 360° video',
+      source: 'https://github.com/shaka-project/shaka-player/blob/v5.3.0/README.md#L412-L426',
+    },
+    {
+      name: 'MPEG-5 LCEVC',
+      source: 'https://github.com/shaka-project/shaka-player/blob/v5.3.0/README.md#L230-L237',
+    },
+    {
+      name: 'Media over QUIC, experimental',
+      source: 'https://github.com/shaka-project/shaka-player/blob/v5.3.0/docs/tutorials/moq.md',
+    },
+    {
+      name: 'WebM in DASH',
+      source: 'https://github.com/shaka-project/shaka-player/blob/v5.3.0/README.md#L317-L321',
+    },
+    {
+      name: 'WisePlay DRM',
+      source: 'https://github.com/shaka-project/shaka-player/blob/v5.3.0/README.md#L263-L301',
+    },
+    {
+      name: 'Live speech-to-text captions',
+      source:
+        'https://github.com/shaka-project/shaka-player/blob/v5.3.0/docs/tutorials/accessibility.md#L29-L45',
+    },
+  ],
+  videojs: [
+    {
+      name: 'React components',
+      source: 'https://github.com/videojs/video.js/blob/main/packages/react/README.md',
+    },
+    {
+      name: 'Server-side rendering',
+      source:
+        'https://github.com/videojs/video.js/blob/main/site/src/content/docs/guides/browser-support.mdx',
+    },
+    {
+      name: 'YouTube and Vimeo videos',
+      source:
+        'https://github.com/videojs/video.js/blob/main/site/src/content/docs/reference/components/youtube-video.mdx',
+    },
+    {
+      name: 'Twitch videos and channels',
+      source:
+        'https://github.com/videojs/video.js/blob/main/site/src/content/docs/reference/components/twitch-video.mdx',
+    },
+    {
+      name: 'Spotify and SoundCloud audio',
+      source:
+        'https://github.com/videojs/video.js/blob/main/site/src/content/docs/reference/components/spotify-audio.mdx',
+    },
+    {
+      name: 'Tap and double-tap gestures',
+      source:
+        'https://github.com/videojs/video.js/blob/main/site/src/content/docs/guides/keyboard-shortcuts.mdx',
+    },
+    {
+      name: 'Orientation lock in fullscreen',
+      source:
+        'https://github.com/videojs/video.js/blob/main/site/src/content/docs/reference/api/feature-orientation-lock.mdx',
+    },
+    {
+      name: 'Several packaged skins',
+      source:
+        'https://github.com/videojs/video.js/blob/main/site/src/content/docs/guides/skins.mdx',
+    },
+    {
+      name: 'Skin source to edit, through shadcn',
+      source:
+        'https://github.com/videojs/video.js/blob/main/site/src/content/docs/guides/installation-shadcn.mdx',
+    },
+    {
+      name: 'A Google Analytics 4 extension',
+      source:
+        'https://github.com/videojs/video.js/blob/main/site/src/content/docs/guides/google-analytics.mdx',
+    },
+  ],
+  bitmovin: [
+    {
+      name: 'Smooth Streaming',
+      source: 'https://cdn.bitmovin.com/player/web/8/docs/enums/Core.ModuleName.html',
+    },
+    {
+      name: 'WebM',
+      source: 'https://developer.bitmovin.com/playback/docs/supported-streaming-formats',
+    },
+    {
+      name: 'WebRTC playback',
+      source: 'https://developer.bitmovin.com/playback/docs/low-latency-support',
+    },
+    {
+      name: 'VR and 360° video',
+      source: 'https://cdn.bitmovin.com/player/web/8/docs/enums/Core.ModuleName.html',
+    },
+    {
+      name: 'Google IMA ads',
+      source: 'https://cdn.bitmovin.com/player/web/8/docs/enums/Core.ModuleName.html',
+    },
+    {
+      name: 'Open Measurement ad verification',
+      source: 'https://cdn.bitmovin.com/player/web/8/docs/enums/Core.ModuleName.html',
+    },
+    {
+      name: 'PlayStation, Xbox, VIDAA, HbbTV and RDK',
+      source: 'https://developer.bitmovin.com/playback/docs/supported-platforms-devices-player',
+    },
+    {
+      name: 'Resume from the last position',
+      source: 'https://github.com/bitmovin/bitmovin-player-ui/blob/v4.23.1/CHANGELOG.md',
+    },
+    {
+      name: 'Links to a time in the video',
+      source: 'https://github.com/bitmovin/bitmovin-player-ui/blob/v4.23.1/CHANGELOG.md',
+    },
+    {
+      name: 'A React Native SDK',
+      source: 'https://developer.bitmovin.com/playback/docs/react-native-introduction',
+    },
+  ],
+  theoplayer: [
+    {
+      name: 'LCEVC',
+      source:
+        'https://optiview.dolby.com/docs/theoplayer/getting-started/sdks/web/how-to-play-an-lcevc-source-with-theoplayer/',
+    },
+    {
+      name: 'Several videos in one player',
+      source:
+        'https://optiview.dolby.com/docs/theoplayer/getting-started/sdks/web/how-to-use-multiview/',
+    },
+    {
+      name: 'VR and 360° video',
+      source: 'https://optiview.dolby.com/docs/theoplayer/how-to-guides/web/miscellaneous/vr/',
+    },
+    {
+      name: 'Caching for offline playback',
+      source:
+        'https://optiview.dolby.com/docs/theoplayer/v11/api-reference/web/interfaces/Cache.html',
+    },
+    {
+      name: 'Google DAI server-side ads',
+      source: 'https://optiview.dolby.com/docs/theoplayer/how-to-guides/web/ads/google-dai/',
+    },
+    {
+      name: 'Yospace server-side ads',
+      source: 'https://optiview.dolby.com/docs/theoplayer/how-to-guides/web/ads/yospace/',
+    },
+    {
+      name: '15 multi-DRM vendors built in',
+      source: 'https://optiview.dolby.com/docs/theoplayer/how-to-guides/web/drm/introduction/',
+    },
+    {
+      name: 'Web Audio access',
+      source:
+        'https://optiview.dolby.com/docs/theoplayer/how-to-guides/web/miscellaneous/web-audio/',
+    },
+    {
+      name: 'C2PA provenance metadata',
+      source:
+        'https://optiview.dolby.com/docs/theoplayer/how-to-guides/web/miscellaneous/c2pa-metadata/',
+    },
+    {
+      name: 'A React Native SDK',
+      source:
+        'https://optiview.dolby.com/docs/theoplayer/getting-started/frameworks/react-native/getting-started/',
+    },
+  ],
+};

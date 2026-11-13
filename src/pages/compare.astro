@@ -4,11 +4,20 @@
  * smaller comparisons the home page does not show, and the licence and price of each player.
  */
 import SizeBars from '../components/size-bars.astro';
+import SupportMark from '../components/support-mark.astro';
 import { compared, comparedOn } from '../data/compare.ts';
 import { featureGroups } from '../data/features.ts';
-import { matrix, matrixCheckedOn, type RivalId, rivals, type Support } from '../data/matrix.ts';
+import {
+  type Cell,
+  extras,
+  matrix,
+  matrixCheckedOn,
+  type RivalId,
+  rivals,
+  type Support,
+} from '../data/matrix.ts';
 import Base from '../layouts/base.astro';
-import { chapterHref, collectedBooks } from '../lib/docs.ts';
+import { chapterHref, collectedBooks, latestOf } from '../lib/docs.ts';
 import { ours, readSizes } from '../lib/sizes.ts';
 import { link } from '../lib/url.ts';
 
@@ -17,30 +26,71 @@ const books = collectedBooks();
 const yes = (value: boolean) => (value ? 'Yes' : 'No');
 
 const features = featureGroups.flatMap((group) => group.features);
-/** Mattebox's cell links to the docs section of the feature the row names. */
-const oursHref = (name: string) => {
-  const feature = features.find((each) => each.name === name);
-  if (feature === undefined) throw new Error(`No feature named ${name}.`);
-  return chapterHref(books, feature.doc);
-};
 const rows = matrix.flatMap((group) => group.rows);
-/** How a cell reads. */
-const words: Record<Support, string> = {
-  yes: 'Yes',
-  partial: 'Partly',
-  no: 'No',
-  unstated: 'Not stated',
-};
-/** How many rows a player answers with `support`. */
-const count = (id: RivalId, support: Support) =>
-  rows.filter((row) => row.cells[id].support === support).length;
+
+/** A column of the matrix: Mattebox, then each other player, with its size from the chart. */
+interface Column {
+  readonly id: 'mattebox' | RivalId;
+  readonly name: string;
+  readonly version: string;
+  readonly kilobytes: number;
+}
+
 /** A player's size, read off the player chart by its row's label. */
 const sizeOf = (label: string) => {
   const row = sizes.player.rows.find((each) => each.label === label);
   if (row === undefined) throw new Error(`The player chart has no row "${label}".`);
   return row.kilobytes;
 };
-const oursKb = ours(sizes.player);
+const playerBook = books.find((book) => book.id === 'player');
+const columns: readonly Column[] = [
+  {
+    id: 'mattebox',
+    name: 'Mattebox',
+    version: playerBook === undefined ? '' : latestOf(playerBook).version,
+    kilobytes: ours(sizes.player),
+  },
+  ...rivals.map((rival) => ({
+    id: rival.id,
+    name: rival.name,
+    version: rival.version,
+    kilobytes: sizeOf(rival.chartLabel),
+  })),
+];
+
+/**
+ * A row's answer for a column. Mattebox's answer is yes, linked to the docs section, when the
+ * row names one of its features, and no, linked to the feature list, when it does not.
+ */
+const cellOf = (row: (typeof rows)[number], id: Column['id']): Cell => {
+  if (id !== 'mattebox') return row.cells[id];
+  if (row.feature === undefined) return { support: 'no', source: link('features/') };
+  const feature = features.find((each) => each.name === row.feature);
+  if (feature === undefined) throw new Error(`No feature named ${row.feature}.`);
+  const yes: Cell = { support: 'yes', source: chapterHref(books, feature.doc) };
+  return row.oursNote === undefined ? yes : { ...yes, note: row.oursNote };
+};
+/**
+ * The notes, numbered in reading order: row by row, then column by column. A cell shows its
+ * number, and the list under the table holds the words, so every icon sits at the same height.
+ */
+const notes = rows.flatMap((row) =>
+  columns.flatMap((column) => {
+    const note = cellOf(row, column.id).note;
+    return note === undefined ? [] : [{ row, column, note }];
+  }),
+);
+const noteNumber = (row: (typeof rows)[number], id: Column['id']) =>
+  notes.findIndex((each) => each.row === row && each.column.id === id) + 1;
+/** How many rows a column answers with `support`. */
+const count = (id: Column['id'], support: Support) =>
+  rows.filter((row) => cellOf(row, id).support === support).length;
+const legend: readonly [Support, string][] = [
+  ['yes', 'Stated'],
+  ['partial', 'Stated in part'],
+  ['no', 'Stated as missing'],
+  ['unstated', 'Not stated either way'],
+];
 const hlsRival = sizes.hls.rows[1];
 ---
 
@@ -60,20 +110,29 @@ const hlsRival = sizes.hls.rows[1];
     <section class="block">
       <h2>Features and size</h2>
       <p>
-        {rows.length} features of Mattebox, and what each other player states about them. Mattebox
-        has all {rows.length} in {oursKb.toFixed(1)} KB.
+        {rows.length} features, and what each player states about them. Mattebox has{' '}
+        {count('mattebox', 'yes')} of them in {ours(sizes.player).toFixed(1)} KB.
       </p>
+      <ul class="legend">
+        {
+          legend.map(([support, meaning]) => (
+            <li>
+              <SupportMark support={support} />
+              <span>{meaning}</span>
+            </li>
+          ))
+        }
+      </ul>
       <div class="scroll">
         <table class="matrix">
           <thead>
             <tr>
-              <th scope="col">Feature</th>
-              <th scope="col" class="ours">Mattebox</th>
+              <th scope="col" class="feature">Feature</th>
               {
-                rivals.map((rival) => (
-                  <th scope="col">
-                    {rival.name}
-                    <span class="version mono">v{rival.version}</span>
+                columns.map((column) => (
+                  <th scope="col" class:list={['player', { ours: column.id === 'mattebox' }]}>
+                    <span class="name">{column.name}</span>
+                    <span class="version mono">v{column.version}</span>
                   </th>
                 ))
               }
@@ -83,30 +142,33 @@ const hlsRival = sizes.hls.rows[1];
             matrix.map((group) => (
               <tbody>
                 <tr class="group">
-                  <th scope="colgroup" colspan={rivals.length + 2}>
+                  <th scope="colgroup" colspan={columns.length + 1}>
                     {group.title}
                   </th>
                 </tr>
                 {group.rows.map((row) => (
                   <tr>
-                    <th scope="row">{row.label}</th>
-                    <td class="ours">
-                      <a class="mark yes" href={oursHref(row.feature)}>
-                        Yes
-                      </a>
-                    </td>
-                    {rivals.map((rival) => {
-                      const cell = row.cells[rival.id];
+                    <th scope="row" class="feature">
+                      {row.label}
+                    </th>
+                    {columns.map((column) => {
+                      const cell = cellOf(row, column.id);
                       return (
-                        <td>
-                          {cell.source === undefined ? (
-                            <span class:list={['mark', cell.support]}>{words[cell.support]}</span>
-                          ) : (
-                            <a class:list={['mark', cell.support]} href={cell.source}>
-                              {words[cell.support]}
-                            </a>
-                          )}
-                          {cell.note !== undefined && <span class="cell-note">{cell.note}</span>}
+                        <td class:list={['answer', { ours: column.id === 'mattebox' }]}>
+                          <span class="mark">
+                            <SupportMark support={cell.support} href={cell.source} />
+                            {cell.note !== undefined && (
+                              <a
+                                class="ref"
+                                href={`#note-${noteNumber(row, column.id)}`}
+                                aria-describedby={`note-${noteNumber(row, column.id)}`}
+                                data-note={cell.note}
+                              >
+                                <span aria-hidden="true">{noteNumber(row, column.id)}</span>
+                                <span class="visually-hidden">Note {noteNumber(row, column.id)}</span>
+                              </a>
+                            )}
+                          </span>
                         </td>
                       );
                     })}
@@ -117,31 +179,49 @@ const hlsRival = sizes.hls.rows[1];
           }
           <tfoot>
             <tr>
-              <th scope="row">Stated in full</th>
-              <td class="ours">{rows.length} of {rows.length}</td>
+              <th scope="row" class="feature">
+                Stated in full
+              </th>
               {
-                rivals.map((rival) => (
-                  <td>
-                    {count(rival.id, 'yes')} of {rows.length}
-                    {count(rival.id, 'partial') > 0 && (
-                      <span class="cell-note">{count(rival.id, 'partial')} partly</span>
-                    )}
+                columns.map((column) => (
+                  <td class:list={['answer', { ours: column.id === 'mattebox' }]}>
+                    <span class="total">{count(column.id, 'yes')}</span>
+                    <span class="cell-note">
+                      of {rows.length}
+                      {count(column.id, 'partial') > 0 && `, ${count(column.id, 'partial')} partly`}
+                    </span>
                   </td>
                 ))
               }
             </tr>
             <tr>
-              <th scope="row">The whole player, min+gzip</th>
-              <td class="ours size">{oursKb.toFixed(1)} KB</td>
+              <th scope="row" class="feature">
+                The whole player, min+gzip
+              </th>
               {
-                rivals.map((rival) => (
-                  <td class="size">{sizeOf(rival.chartLabel).toFixed(1)} KB</td>
+                columns.map((column) => (
+                  <td class:list={['answer', 'size', { ours: column.id === 'mattebox' }]}>
+                    {column.kilobytes.toFixed(1)} KB
+                  </td>
                 ))
               }
             </tr>
           </tfoot>
         </table>
       </div>
+      <details class="notes-box" id="notes">
+        <summary>{notes.length} notes on the cells above</summary>
+        <ol class="notes">
+          {
+            notes.map((each, index) => (
+              <li id={`note-${index + 1}`}>
+                <strong>{each.column.name}</strong>, {each.row.label}: {each.note}.
+              </li>
+            ))
+          }
+        </ol>
+      </details>
+      <div class="tip" role="tooltip" hidden></div>
       <p class="note">
         Checked on {matrixCheckedOn}. "Not stated" means the project's docs and source say nothing
         either way. A video.js 10 cell counts what its media elements give through SPF, hls.js and
@@ -150,6 +230,30 @@ const hlsRival = sizes.hls.rows[1];
           >player chart</a
         >, the one on the <a href={link('')}>home page</a>.
       </p>
+    </section>
+
+    <section class="block">
+      <h2>Where the others go further</h2>
+      <p>
+        Features each player states that Mattebox does not have. Each links to where its project
+        states it.
+      </p>
+      <div class="further">
+        {
+          rivals.map((rival) => (
+            <section class="card">
+              <h3>{rival.name}</h3>
+              <ul>
+                {extras[rival.id].map((extra) => (
+                  <li>
+                    <a href={extra.source}>{extra.name}</a>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))
+        }
+      </div>
     </section>
 
     <section class="block">
@@ -169,12 +273,12 @@ const hlsRival = sizes.hls.rows[1];
         <a href="https://videojs.org">videojs.org</a> states a smaller figure. Its{' '}
         <a href="https://github.com/videojs/video.js/blob/main/site/scripts/snapshot-bundle-sizes.mjs"
           >snapshot script</a
-        >
+        >{' '}
         measures the React preset with a plain <code>&lt;video&gt;</code>, so the figure plays no HLS
         and no DASH. The{' '}
         <a href="https://github.com/videojs/video.js/blob/main/.github/scripts/bundle-size.js"
           >measurement</a
-        >
+        >{' '}
         leaves out React and compresses with brotli at quality 11. The charts here use gzip at level
         9.
       </p>
@@ -203,7 +307,7 @@ const hlsRival = sizes.hls.rows[1];
       <p class="note">
         The sizes come from the scripts in the{' '}
         <a href="https://github.com/jboix/mattebox/blob/main/scripts/size-chart.mjs">engine</a> and{' '}
-        <a href="https://github.com/jboix/mattebox-player/blob/main/scripts/size-chart.mjs">player</a>
+        <a href="https://github.com/jboix/mattebox-player/blob/main/scripts/size-chart.mjs">player</a>{' '}
         repositories. Each one installs the other players from npm at the version shown and bundles
         them the same way, so you can run it and get the same numbers.
       </p>
@@ -249,6 +353,59 @@ const hlsRival = sizes.hls.rows[1];
   </div>
 </Base>
 
+<script>
+  /**
+   * The notes of the feature matrix: hovering or focusing a note's number shows the note in one
+   * tooltip, placed in the viewport so the table's scroll box cannot clip it, and following the
+   * number opens the folded list at that note.
+   */
+  const tip = document.querySelector<HTMLElement>('.tip');
+  const notesBox = document.querySelector<HTMLDetailsElement>('#notes');
+
+  /** Shows a note's words over its number. */
+  function show(ref: HTMLElement): void {
+    if (tip === null) return;
+    tip.textContent = ref.dataset.note ?? '';
+    tip.hidden = false;
+    const box = ref.getBoundingClientRect();
+    const width = tip.offsetWidth;
+    const left = Math.min(
+      Math.max(8, box.left + box.width / 2 - width / 2),
+      window.innerWidth - width - 8,
+    );
+    const above = box.top - tip.offsetHeight - 8;
+    tip.style.left = `${left}px`;
+    tip.style.top = `${above < 8 ? box.bottom + 8 : above}px`;
+  }
+
+  /** Hides the tooltip. */
+  function hide(): void {
+    if (tip !== null) tip.hidden = true;
+  }
+
+  /** Opens the list when the address points at one of its notes. */
+  function openAtHash(): void {
+    if (notesBox !== null && location.hash.startsWith('#note-')) notesBox.open = true;
+  }
+
+  for (const ref of document.querySelectorAll<HTMLElement>('.matrix .ref')) {
+    ref.addEventListener('pointerenter', () => show(ref));
+    ref.addEventListener('pointerleave', hide);
+    ref.addEventListener('focus', () => show(ref));
+    ref.addEventListener('blur', hide);
+    ref.addEventListener('click', () => {
+      hide();
+      if (notesBox !== null) notesBox.open = true;
+    });
+  }
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') hide();
+  });
+  window.addEventListener('scroll', hide, { passive: true });
+  window.addEventListener('hashchange', openAtHash);
+  openAtHash();
+</script>
+
 <style>
   .block {
     margin-top: 64px;
@@ -264,22 +421,38 @@ const hlsRival = sizes.hls.rows[1];
     overflow-x: auto;
   }
 
+  .note {
+    margin-top: 16px;
+    font-size: 0.9375rem;
+    color: var(--color-ink-secondary);
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+    margin: 24px 0 8px;
+    padding: 0;
+    list-style: none;
+    font-size: 0.875rem;
+    color: var(--color-ink-secondary);
+  }
+
+  .legend li {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
   table {
     width: 100%;
     border-collapse: collapse;
   }
 
-  .licences {
-    min-width: 720px;
-  }
-
-  .matrix {
-    min-width: 860px;
-  }
-
+  /* Every cell has the same padding, highlighted or not, so the columns line up. */
   th,
   td {
-    padding: 12px 16px 12px 0;
+    padding: 12px;
     border-bottom: 1px solid var(--color-border);
     text-align: left;
     vertical-align: top;
@@ -297,98 +470,208 @@ const hlsRival = sizes.hls.rows[1];
     font-weight: 600;
   }
 
-  .version {
-    display: block;
-    margin-top: 4px;
-    text-transform: none;
-    letter-spacing: 0;
+  .licences {
+    min-width: 720px;
   }
 
-  .matrix td,
-  .matrix th {
-    padding: 8px 12px 8px 0;
+  .matrix {
+    min-width: 880px;
+    table-layout: fixed;
+  }
+
+  .matrix th,
+  .matrix td {
+    padding: 12px 8px;
+    vertical-align: middle;
+  }
+
+  .matrix thead th {
+    vertical-align: bottom;
+    padding-bottom: 14px;
+    border-bottom: 2px solid var(--color-ink);
   }
 
   .matrix tfoot th,
   .matrix tfoot td {
+    padding-top: 16px;
     border-top: 2px solid var(--color-ink);
-    font-weight: 600;
+    border-bottom: 0;
   }
 
-  /* The feature stays in view while a narrow screen scrolls the players sideways. */
-  .matrix th[scope='row'],
-  .matrix thead th:first-child {
+  /* The highlight is a quiet tint; vermilion only marks the top of Mattebox's column. */
+  .ours {
+    background: var(--color-surface-muted);
+  }
+
+  .matrix .feature {
     position: sticky;
     left: 0;
     z-index: 1;
+    width: 26%;
+    padding-left: 0;
+    text-align: left;
+    font-weight: 500;
     background: var(--color-ground);
   }
 
+  .matrix .player,
+  .matrix .answer {
+    text-align: center;
+  }
+
+  .matrix .name {
+    display: block;
+    font: 600 0.9375rem / 1.25 var(--font-sans);
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--color-ink);
+  }
+
+  .matrix .version {
+    display: block;
+    margin-top: 4px;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  .matrix .player.ours {
+    box-shadow: inset 0 3px 0 var(--color-vermilion);
+  }
+
   .matrix .group th {
-    padding-top: 24px;
+    padding: 28px 0 8px;
+    border-bottom: 1px solid var(--color-border);
     font: 500 0.6875rem / 1.2 var(--font-mono);
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--color-ink-secondary);
+    background: var(--color-ground);
   }
 
-  .matrix tbody th[scope='row'] {
-    font-weight: 500;
+  /* The note's number hangs to the right, so the icon stays in the centre of its column. */
+  .matrix .mark {
+    position: relative;
+    display: inline-flex;
+    vertical-align: middle;
   }
 
-  .matrix .ours,
-  .licences .ours th,
-  .licences .ours td {
-    background: var(--color-accent-soft);
+  /* 24 by 24, the smallest target a pointer should have to hit. */
+  .matrix .ref {
+    position: absolute;
+    top: 50%;
+    left: calc(100% + 2px);
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    width: 24px;
+    height: 24px;
+    margin-top: -12px;
+    font: 600 0.6875rem / 1 var(--font-mono);
+    color: var(--color-accent);
+    text-decoration: none;
   }
 
-  .matrix .ours {
-    padding-left: 12px;
+  .matrix .ref:hover span,
+  .matrix .ref:focus-visible span {
+    text-decoration: underline;
   }
 
-  .licences .ours th,
-  .licences .ours td {
-    box-shadow: inset 0 -2px 0 var(--color-vermilion);
+  .matrix .cell-note {
+    display: block;
+    margin-top: 4px;
+    font-size: 0.75rem;
+    line-height: 1.3;
+    color: var(--color-ink-secondary);
   }
 
-  .licences .ours th {
-    padding-left: 12px;
+  .notes-box {
+    margin-top: 16px;
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
   }
 
-  .mark {
+  .notes-box summary {
+    padding: 12px 0;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9375rem;
+  }
+
+  .notes {
+    margin: 0 0 16px;
+    padding-left: 24px;
+    columns: 2 320px;
+    column-gap: 40px;
+    font-size: 0.8125rem;
+    line-height: 1.45;
+    color: var(--color-ink-secondary);
+  }
+
+  .tip {
+    position: fixed;
+    z-index: 10;
+    max-width: 260px;
+    padding: 8px 10px;
+    border-radius: var(--radius-control);
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    color: var(--color-ink-inverse);
+    background: var(--color-ink);
+    pointer-events: none;
+  }
+
+  .notes li {
+    break-inside: avoid;
+    margin-bottom: 4px;
+  }
+
+  .notes li:target {
+    color: var(--color-ink);
+    background: var(--color-surface-muted);
+  }
+
+  .notes strong {
+    color: var(--color-ink);
     font-weight: 600;
   }
 
-  .mark.yes {
-    color: var(--color-ok-ink);
-  }
-
-  .mark.partial {
-    color: var(--color-ink);
-  }
-
-  .mark.no,
-  .mark.unstated {
-    color: var(--color-ink-secondary);
-    font-weight: 400;
-  }
-
-  .cell-note {
+  .matrix .total {
     display: block;
-    font-size: 0.8125rem;
-    line-height: 1.35;
-    color: var(--color-ink-secondary);
+    font: 600 1.75rem / 1 var(--font-display);
   }
 
   .matrix .size {
-    font-family: var(--font-mono);
+    font: 600 1rem / 1.2 var(--font-mono);
     white-space: nowrap;
   }
 
-  .note {
-    margin-top: 16px;
+  .matrix tfoot .feature {
+    font-weight: 600;
+  }
+
+  .further {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+    margin-top: 24px;
+  }
+
+  .card {
+    padding: 20px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    background: var(--color-surface);
+  }
+
+  .card h3 {
+    margin: 0 0 12px;
+    font-size: 1.125rem;
+  }
+
+  .card ul {
+    margin: 0;
+    padding-left: 18px;
     font-size: 0.9375rem;
-    color: var(--color-ink-secondary);
-    max-width: 78ch;
+    line-height: 1.6;
   }
 </style>
