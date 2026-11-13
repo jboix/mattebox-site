@@ -46,7 +46,7 @@ const playerBook = books.find((book) => book.id === 'player');
 const columns: readonly Column[] = [
   {
     id: 'mattebox',
-    name: 'Mattebox',
+    name: '@mattebox/player',
     version: playerBook === undefined ? '' : latestOf(playerBook).version,
     kilobytes: ours(sizes.player),
   },
@@ -110,7 +110,7 @@ const hlsRival = sizes.hls.rows[1];
     <section class="block">
       <h2>Features and size</h2>
       <p>
-        {rows.length} features, and what each player states about them. Mattebox has{' '}
+        {rows.length} features, and what each player states about them. @mattebox/player has{' '}
         {count('mattebox', 'yes')} of them in {ours(sizes.player).toFixed(1)} KB.
       </p>
       <ul class="legend">
@@ -235,7 +235,7 @@ const hlsRival = sizes.hls.rows[1];
     <section class="block">
       <h2>Where the others go further</h2>
       <p>
-        Features each player states that Mattebox does not have. Each links to where its project
+        Features each player states that @mattebox/player does not have. Each links to where its project
         states it.
       </p>
       <div class="further">

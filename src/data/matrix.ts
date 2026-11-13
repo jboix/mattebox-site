@@ -90,7 +90,6 @@ export const matrix: readonly MatrixGroup[] = [
           },
           videojs: {
             support: 'yes',
-            note: 'Through SPF and hls.js',
             source:
               'https://github.com/videojs/video.js/blob/main/site/src/content/docs/guides/migrate-from-video-js-8.mdx',
           },
@@ -110,7 +109,6 @@ export const matrix: readonly MatrixGroup[] = [
         cells: {
           shaka: {
             support: 'yes',
-            note: 'Transmuxed to MP4',
             source:
               'https://github.com/shaka-project/shaka-player/blob/v5.3.0/README.md#transmuxer-support',
           },
@@ -141,7 +139,6 @@ export const matrix: readonly MatrixGroup[] = [
           },
           videojs: {
             support: 'yes',
-            note: 'Through dash.js',
             source:
               'https://github.com/videojs/video.js/blob/main/packages/adapters/shaka-video/src/stream-type.ts',
           },
@@ -166,7 +163,6 @@ export const matrix: readonly MatrixGroup[] = [
           },
           videojs: {
             support: 'yes',
-            note: 'Through dash.js',
             source:
               'https://github.com/videojs/video.js/blob/main/packages/adapters/dash-video/src/media-tracks.ts',
           },
@@ -270,7 +266,6 @@ export const matrix: readonly MatrixGroup[] = [
           },
           videojs: {
             support: 'yes',
-            note: 'Through hls.js',
             source:
               'https://github.com/videojs/video.js/blob/main/site/src/content/docs/guides/media-sources.mdx',
           },
@@ -296,7 +291,6 @@ export const matrix: readonly MatrixGroup[] = [
           },
           videojs: {
             support: 'yes',
-            note: 'Through hls.js',
             source:
               'https://github.com/videojs/video.js/blob/main/site/src/content/docs/guides/media-sources.mdx',
           },
@@ -321,7 +315,6 @@ export const matrix: readonly MatrixGroup[] = [
           },
           videojs: {
             support: 'yes',
-            note: 'Native HLS and hls.js',
             source:
               'https://github.com/videojs/video.js/blob/main/site/src/content/docs/guides/media-sources.mdx',
           },
@@ -388,7 +381,6 @@ export const matrix: readonly MatrixGroup[] = [
           },
           videojs: {
             support: 'yes',
-            note: 'Through hls.js',
             source:
               'https://github.com/videojs/video.js/blob/main/packages/adapters/hlsjs-video/src/text-tracks.ts',
           },
@@ -622,7 +614,6 @@ export const matrix: readonly MatrixGroup[] = [
         cells: {
           shaka: {
             support: 'yes',
-            note: 'Version 1',
             source:
               'https://github.com/shaka-project/shaka-player/blob/v5.3.0/README.md#content-steering-support',
           },
@@ -891,7 +882,6 @@ export const matrix: readonly MatrixGroup[] = [
           },
           videojs: {
             support: 'yes',
-            note: 'An extension, Chromium only',
             source:
               'https://github.com/videojs/video.js/blob/main/site/src/content/docs/guides/casting.mdx',
           },
@@ -944,7 +934,6 @@ export const matrix: readonly MatrixGroup[] = [
           },
           videojs: {
             support: 'yes',
-            note: 'Safari only',
             source:
               'https://github.com/videojs/video.js/blob/main/site/src/content/docs/guides/casting.mdx',
           },
@@ -962,25 +951,8 @@ export const matrix: readonly MatrixGroup[] = [
     ],
   },
   {
-    title: 'Building on it',
+    title: 'The player',
     rows: [
-      {
-        label: 'A framework-free custom element',
-        feature: 'Framework-free custom element',
-        cells: {
-          shaka: { support: 'unstated' },
-          videojs: {
-            support: 'yes',
-            source: 'https://github.com/videojs/video.js/blob/main/packages/html/README.md',
-          },
-          bitmovin: { support: 'unstated' },
-          theoplayer: {
-            support: 'yes',
-            note: 'Open Video UI',
-            source: 'https://github.com/THEOplayer/web-ui',
-          },
-        },
-      },
       {
         label: 'Controls translated',
         feature: 'Controls in 12 languages',
@@ -1036,31 +1008,6 @@ export const matrix: readonly MatrixGroup[] = [
         },
       },
       {
-        label: 'Connectors to your content API',
-        feature: 'Content API connectors',
-        cells: {
-          shaka: { support: 'unstated' },
-          videojs: { support: 'unstated' },
-          bitmovin: { support: 'unstated' },
-          theoplayer: { support: 'unstated' },
-        },
-      },
-      {
-        label: 'A plug-in API for analytics trackers',
-        feature: 'Analytics trackers',
-        cells: {
-          shaka: { support: 'unstated' },
-          videojs: {
-            support: 'partial',
-            note: 'Mux Data and GA4 extensions only',
-            source:
-              'https://github.com/videojs/video.js/blob/main/site/src/content/docs/guides/migrate-from-video-js-8.mdx',
-          },
-          bitmovin: { support: 'unstated' },
-          theoplayer: { support: 'unstated' },
-        },
-      },
-      {
         label: 'Quality of experience metrics',
         feature: 'Quality of experience metrics',
         cells: {
@@ -1108,16 +1055,6 @@ export const matrix: readonly MatrixGroup[] = [
           },
         },
       },
-      {
-        label: 'Trace record and replay',
-        feature: 'Trace replay',
-        cells: {
-          shaka: { support: 'unstated' },
-          videojs: { support: 'unstated' },
-          bitmovin: { support: 'unstated' },
-          theoplayer: { support: 'unstated' },
-        },
-      },
     ],
   },
 ];
@@ -1153,10 +1090,6 @@ export const extras: Readonly<Record<RivalId, readonly Extra[]>> = {
       source: 'https://github.com/shaka-project/shaka-player/blob/v5.3.0/README.md#L230-L237',
     },
     {
-      name: 'Media over QUIC, experimental',
-      source: 'https://github.com/shaka-project/shaka-player/blob/v5.3.0/docs/tutorials/moq.md',
-    },
-    {
       name: 'WebM in DASH',
       source: 'https://github.com/shaka-project/shaka-player/blob/v5.3.0/README.md#L317-L321',
     },
@@ -1174,51 +1107,6 @@ export const extras: Readonly<Record<RivalId, readonly Extra[]>> = {
     {
       name: 'React components',
       source: 'https://github.com/videojs/video.js/blob/main/packages/react/README.md',
-    },
-    {
-      name: 'Server-side rendering',
-      source:
-        'https://github.com/videojs/video.js/blob/main/site/src/content/docs/guides/browser-support.mdx',
-    },
-    {
-      name: 'YouTube and Vimeo videos',
-      source:
-        'https://github.com/videojs/video.js/blob/main/site/src/content/docs/reference/components/youtube-video.mdx',
-    },
-    {
-      name: 'Twitch videos and channels',
-      source:
-        'https://github.com/videojs/video.js/blob/main/site/src/content/docs/reference/components/twitch-video.mdx',
-    },
-    {
-      name: 'Spotify and SoundCloud audio',
-      source:
-        'https://github.com/videojs/video.js/blob/main/site/src/content/docs/reference/components/spotify-audio.mdx',
-    },
-    {
-      name: 'Tap and double-tap gestures',
-      source:
-        'https://github.com/videojs/video.js/blob/main/site/src/content/docs/guides/keyboard-shortcuts.mdx',
-    },
-    {
-      name: 'Orientation lock in fullscreen',
-      source:
-        'https://github.com/videojs/video.js/blob/main/site/src/content/docs/reference/api/feature-orientation-lock.mdx',
-    },
-    {
-      name: 'Several packaged skins',
-      source:
-        'https://github.com/videojs/video.js/blob/main/site/src/content/docs/guides/skins.mdx',
-    },
-    {
-      name: 'Skin source to edit, through shadcn',
-      source:
-        'https://github.com/videojs/video.js/blob/main/site/src/content/docs/guides/installation-shadcn.mdx',
-    },
-    {
-      name: 'A Google Analytics 4 extension',
-      source:
-        'https://github.com/videojs/video.js/blob/main/site/src/content/docs/guides/google-analytics.mdx',
     },
   ],
   bitmovin: [
@@ -1249,14 +1137,6 @@ export const extras: Readonly<Record<RivalId, readonly Extra[]>> = {
     {
       name: 'PlayStation, Xbox, VIDAA, HbbTV and RDK',
       source: 'https://developer.bitmovin.com/playback/docs/supported-platforms-devices-player',
-    },
-    {
-      name: 'Resume from the last position',
-      source: 'https://github.com/bitmovin/bitmovin-player-ui/blob/v4.23.1/CHANGELOG.md',
-    },
-    {
-      name: 'Links to a time in the video',
-      source: 'https://github.com/bitmovin/bitmovin-player-ui/blob/v4.23.1/CHANGELOG.md',
     },
     {
       name: 'A React Native SDK',
@@ -1290,20 +1170,6 @@ export const extras: Readonly<Record<RivalId, readonly Extra[]>> = {
     {
       name: 'Yospace server-side ads',
       source: 'https://optiview.dolby.com/docs/theoplayer/how-to-guides/web/ads/yospace/',
-    },
-    {
-      name: '15 multi-DRM vendors built in',
-      source: 'https://optiview.dolby.com/docs/theoplayer/how-to-guides/web/drm/introduction/',
-    },
-    {
-      name: 'Web Audio access',
-      source:
-        'https://optiview.dolby.com/docs/theoplayer/how-to-guides/web/miscellaneous/web-audio/',
-    },
-    {
-      name: 'C2PA provenance metadata',
-      source:
-        'https://optiview.dolby.com/docs/theoplayer/how-to-guides/web/miscellaneous/c2pa-metadata/',
     },
     {
       name: 'A React Native SDK',
