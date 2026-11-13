@@ -4,6 +4,8 @@
  */
 import { readFileSync } from 'node:fs';
 import { type Book, books } from './books.ts';
+import { headingId } from './markdown.ts';
+import { link } from './url.ts';
 import type { BookVersion } from './versions.ts';
 
 /** A chapter of a version. */
@@ -71,7 +73,7 @@ export function latestOf(book: CollectedBook): CollectedVersion {
  * @param slug - The chapter's slug.
  * @returns The version.
  */
-export function latestWith(book: CollectedBook, slug: string): CollectedVersion {
+function latestWith(book: CollectedBook, slug: string): CollectedVersion {
   const latest = latestOf(book);
   const has = (version: CollectedVersion) => version.chapters.some((each) => each.slug === slug);
   if (has(latest)) return latest;
@@ -110,4 +112,22 @@ export function entryId(book: string, version: string, slug: string): string {
 export function needsLine(version: CollectedVersion): string | undefined {
   const parts = Object.entries(version.needs).map(([name, range]) => `${name} ${range}`);
   return parts.length === 0 ? undefined : `Needs ${parts.join(' and ')}.`;
+}
+
+/**
+ * The address of a chapter in the version {@link latestWith} picks, at a section when one is
+ * named. The build's link check fails when the section's heading is not in the chapter.
+ *
+ * @param books - The collected books.
+ * @param doc - A book's id, a chapter's slug, and the heading of a section, if any.
+ * @returns The address, through `link()`.
+ */
+export function chapterHref(
+  books: readonly CollectedBook[],
+  [bookId, slug, section]: readonly [string, string, string?],
+): string {
+  const book = books.find((each) => each.id === bookId);
+  if (book === undefined) throw new Error(`No book ${bookId}.`);
+  const fragment = section === undefined ? '' : `#${headingId(section)}`;
+  return link(`${latestWith(book, slug).path}${slug}/${fragment}`);
 }
