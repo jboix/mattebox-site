@@ -49,6 +49,7 @@ const share = Math.round((playerSize / nextSize) * 100);
         <!-- The film is CMAF over HLS and DASH, without DRM or MPEG-TS: the dual preset carries it, and the page script adds chapters and thumbnails. -->
         <mattebox-player
           preset="dual"
+          disablepictureinpicture
           controls="custom"
           autoplay
           muted
