@@ -44,6 +44,8 @@ const base = process.env.SITE_BASE || '/';
 interface ManifestChapter {
   readonly slug: string;
   readonly title: string;
+  /** The ids of the chapter's headings, so a link to a section finds a version that has it. */
+  readonly sections: readonly string[];
 }
 
 /** A version of a book as the manifest lists it. */
@@ -261,7 +263,7 @@ function writeChapter(place: Omit<Place, 'ids'>, order: number): ManifestChapter
     join(folder, `${chapter.slug}.md`),
     `---\n${lines.join('\n')}\n---\n\n${markdown}\n`,
   );
-  return { slug: chapter.slug, title };
+  return { slug: chapter.slug, title, sections: [...full.ids] };
 }
 
 /**

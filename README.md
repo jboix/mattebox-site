@@ -41,16 +41,19 @@ in this repository. See [the docs](#the-docs).
 Each deliverable is a book with its own versions, because each package is
 released on its own.
 
-| Book          | Package                        | Repository          |
-| ------------- | ------------------------------ | ------------------- |
-| Engine        | `mattebox`                     | `mattebox`          |
-| Player        | `@mattebox/player`             | `mattebox-player`   |
-| Player core   | `@mattebox/player-core`        | `mattebox-player`   |
-| Playlist      | `@mattebox/player-playlist`    | `mattebox-player`   |
-| Diagnostics   | `@mattebox/player-diagnostics` | `mattebox-player`   |
-| TV navigation | `@mattebox/player-spatial-nav` | `mattebox-player`   |
-| Cast sender   | `@mattebox/player-cast`        | `mattebox-player`   |
-| Cast receiver | `@mattebox/cast-receiver`      | `mattebox-receiver` |
+| Book          | Package                          | Repository          |
+| ------------- | -------------------------------- | ------------------- |
+| Engine        | `mattebox`                       | `mattebox`          |
+| Player        | `@mattebox/player`               | `mattebox-player`   |
+| Player core   | `@mattebox/player-core`          | `mattebox-player`   |
+| Playlist      | `@mattebox/player-playlist`      | `mattebox-player`   |
+| Ads           | `@mattebox/player-ads`           | `mattebox-player`   |
+| Preferences   | `@mattebox/player-preferences`   | `mattebox-player`   |
+| Live captions | `@mattebox/player-live-captions` | `mattebox-player`   |
+| Diagnostics   | `@mattebox/player-diagnostics`   | `mattebox-player`   |
+| TV navigation | `@mattebox/player-spatial-nav`   | `mattebox-player`   |
+| Cast sender   | `@mattebox/player-cast`          | `mattebox-player`   |
+| Cast receiver | `@mattebox/cast-receiver`        | `mattebox-receiver` |
 
 `bun run collect` reads the chapters of each book from its repository:
 

@@ -208,6 +208,12 @@ export const featureGroups: readonly FeatureGroup[] = [
       { name: 'Widevine', by: engine, doc: ['engine', 'drm', 'EME stages'] },
       { name: 'PlayReady', by: engine, doc: ['engine', 'drm', 'EME stages'] },
       { name: 'FairPlay', by: engine, doc: ['engine', 'drm', 'FairPlay'] },
+      {
+        name: 'WisePlay',
+        note: 'On LG webOS TVs and Huawei devices',
+        by: engine,
+        doc: ['engine', 'drm', 'WisePlay'],
+      },
       { name: 'ClearKey', by: engine, doc: ['engine', 'drm', 'ClearKey'] },
       { name: 'License renewal', by: engine, doc: ['engine', 'drm', 'License renewal'] },
       {
@@ -284,6 +290,12 @@ export const featureGroups: readonly FeatureGroup[] = [
         note: "In step with the browser's caption menu",
         by: engine,
         doc: ['engine', 'audio-and-text', 'engine.tracks'],
+      },
+      {
+        name: 'Live captions from speech',
+        note: "Written on the device from the video's own sound, in Chrome",
+        by: ['live-captions'],
+        doc: ['live-captions', 'live-captions', 'The element'],
       },
       {
         name: 'Subtitle size and background',
@@ -709,6 +721,18 @@ export const featureGroups: readonly FeatureGroup[] = [
         note: 'The sender passes the license servers and headers, and a new token on a 401',
         by: ['cast-sender', 'cast-receiver'],
         doc: ['cast-sender', 'casting'],
+      },
+      {
+        name: "The player's own controls during a cast",
+        note: 'Play, the seek bar, the volume, the chapters and the skips drive the device',
+        by: [...player, 'cast-sender'],
+        doc: ['cast-sender', 'casting'],
+      },
+      {
+        name: 'The programme on the receiver',
+        note: 'Title, poster, markers and chapters, or a load through your own connector',
+        by: ['cast-sender', 'cast-receiver'],
+        doc: ['cast-receiver', 'loads', 'The programme'],
       },
       {
         name: 'Chromecast receiver',

@@ -161,6 +161,17 @@ export const books: readonly Book[] = [
     chapters: guide(playerGuide, ['08-preferences']),
   },
   {
+    id: 'live-captions',
+    name: 'Live captions',
+    packageName: '@mattebox/player-live-captions',
+    summary: "Captions written from the video's own speech, by the browser's speech recognition.",
+    group: 'Player',
+    repository: 'mattebox-player',
+    tagPrefix: '@mattebox/player-live-captions-v',
+    manifest: 'packages/live-captions/package.json',
+    chapters: guide(playerGuide, ['15-live-captions']),
+  },
+  {
     id: 'diagnostics',
     name: 'Diagnostics',
     packageName: '@mattebox/player-diagnostics',

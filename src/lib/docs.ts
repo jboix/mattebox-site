@@ -12,6 +12,8 @@ import type { BookVersion } from './versions.ts';
 interface ChapterEntry {
   readonly slug: string;
   readonly title: string;
+  /** The ids of the chapter's headings. */
+  readonly sections: readonly string[];
 }
 
 /** A version of a book, with what it holds. */
@@ -66,16 +68,20 @@ export function latestOf(book: CollectedBook): CollectedVersion {
 }
 
 /**
- * The version a link to a chapter goes to: the latest release when it has the chapter, else the
- * unreleased one, where a chapter added since the release already is.
+ * The version a link to a chapter goes to: the latest release when it has the chapter and the
+ * section, else the unreleased one, where a chapter or a section added since the release is.
  *
  * @param book - The book.
  * @param slug - The chapter's slug.
+ * @param section - The id of a heading the chapter must have, if any.
  * @returns The version.
  */
-function latestWith(book: CollectedBook, slug: string): CollectedVersion {
+function latestWith(book: CollectedBook, slug: string, section?: string): CollectedVersion {
   const latest = latestOf(book);
-  const has = (version: CollectedVersion) => version.chapters.some((each) => each.slug === slug);
+  const has = (version: CollectedVersion) =>
+    version.chapters.some(
+      (each) => each.slug === slug && (section === undefined || each.sections.includes(section)),
+    );
   if (has(latest)) return latest;
   return book.versions.find((version) => version.next && has(version)) ?? latest;
 }
@@ -128,6 +134,7 @@ export function chapterHref(
 ): string {
   const book = books.find((each) => each.id === bookId);
   if (book === undefined) throw new Error(`No book ${bookId}.`);
-  const fragment = section === undefined ? '' : `#${headingId(section)}`;
-  return link(`${latestWith(book, slug).path}${slug}/${fragment}`);
+  const id = section === undefined ? undefined : headingId(section);
+  const fragment = id === undefined ? '' : `#${id}`;
+  return link(`${latestWith(book, slug, id).path}${slug}/${fragment}`);
 }

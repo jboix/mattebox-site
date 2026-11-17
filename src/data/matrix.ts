@@ -330,6 +330,29 @@ export const matrix: readonly MatrixGroup[] = [
         },
       },
       {
+        label: 'WisePlay',
+        feature: 'WisePlay',
+        oursNote: 'Not yet tested on a device',
+        cells: {
+          shaka: {
+            support: 'yes',
+            note: 'On Huawei devices, community-supported and untested by the project',
+            source: 'https://github.com/shaka-project/shaka-player/blob/v5.3.0/README.md#L263-L301',
+          },
+          videojs: { support: 'unstated' },
+          bitmovin: {
+            support: 'no',
+            source:
+              'https://developer.bitmovin.com/playback/docs/drm-content-protection#web-sdk-drm-support-on-desktop-devices',
+          },
+          theoplayer: {
+            support: 'no',
+            source:
+              'https://optiview.dolby.com/docs/theoplayer/v11/api-reference/web/types/KeySystemId.html',
+          },
+        },
+      },
+      {
         label: 'HDR only where the screen shows it',
         feature: 'HDR by capability',
         cells: {
@@ -438,6 +461,22 @@ export const matrix: readonly MatrixGroup[] = [
             source:
               'https://optiview.dolby.com/docs/theoplayer/v11/api-reference/web/interfaces/TextTrack.html',
           },
+        },
+      },
+      {
+        label: 'Live captions from speech',
+        feature: 'Live captions from speech',
+        oursNote: 'In Chrome',
+        cells: {
+          shaka: {
+            support: 'yes',
+            note: 'Where speech recognition takes an audio track',
+            source:
+              'https://github.com/shaka-project/shaka-player/blob/v5.3.0/docs/tutorials/accessibility.md#L29-L45',
+          },
+          videojs: { support: 'unstated' },
+          bitmovin: { support: 'unstated' },
+          theoplayer: { support: 'unstated' },
         },
       },
       {
@@ -1092,15 +1131,6 @@ export const extras: Readonly<Record<RivalId, readonly Extra[]>> = {
     {
       name: 'WebM in DASH',
       source: 'https://github.com/shaka-project/shaka-player/blob/v5.3.0/README.md#L317-L321',
-    },
-    {
-      name: 'WisePlay DRM',
-      source: 'https://github.com/shaka-project/shaka-player/blob/v5.3.0/README.md#L263-L301',
-    },
-    {
-      name: 'Live speech-to-text captions',
-      source:
-        'https://github.com/shaka-project/shaka-player/blob/v5.3.0/docs/tutorials/accessibility.md#L29-L45',
     },
   ],
   videojs: [
