@@ -715,6 +715,12 @@ export const featureGroups: readonly FeatureGroup[] = [
         by: ['tv'],
         doc: ['tv', 'tv', 'Seeking with the remote'],
       },
+      {
+        name: 'Game controllers',
+        note: 'PlayStation, Xbox and Nintendo pads, with buttons you remap',
+        by: ['tv'],
+        doc: ['tv', 'tv', 'Game controllers'],
+      },
       { name: 'Chromecast sender', by: ['cast-sender'], doc: ['cast-sender', 'casting'] },
       {
         name: 'DRM and signed URLs on the Chromecast',

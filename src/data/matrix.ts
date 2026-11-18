@@ -911,6 +911,21 @@ export const matrix: readonly MatrixGroup[] = [
         },
       },
       {
+        label: 'Game controllers',
+        feature: 'Game controllers',
+        cells: {
+          shaka: { support: 'unstated' },
+          videojs: { support: 'unstated' },
+          bitmovin: {
+            support: 'partial',
+            note: 'On Xbox and PlayStation, the pad moves focus and selects',
+            source:
+              'https://github.com/bitmovin/bitmovin-player-ui/blob/v4.23.1/src/ts/spatialnavigation/getKeyMapForPlatform.ts#L40-L112',
+          },
+          theoplayer: { support: 'unstated' },
+        },
+      },
+      {
         label: 'Chromecast sender',
         feature: 'Chromecast sender',
         cells: {
