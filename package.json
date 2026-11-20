@@ -32,9 +32,9 @@
     "@fontsource/barlow": "^5.3.0",
     "@fontsource/barlow-condensed": "^5.3.0",
     "@fontsource/jetbrains-mono": "^5.3.0",
-    "@mattebox/player": "^0.14.0",
+    "@mattebox/player": "^0.16.0",
     "astro": "^7.4.12",
-    "mattebox": "^0.17.2"
+    "mattebox": "^0.18.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.12",
