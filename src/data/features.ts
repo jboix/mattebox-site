@@ -503,6 +503,12 @@ export const featureGroups: readonly FeatureGroup[] = [
       },
       { name: 'Keyboard and media keys', by: player, doc: ['player', 'the-element', 'The bar'] },
       {
+        name: 'Touch controls',
+        note: 'A tap shows or hides the bar, and a click still plays or pauses',
+        by: player,
+        doc: ['player', 'the-element', 'The bar'],
+      },
+      {
         name: 'Screen reader support',
         note: 'Every control has a name, and the sliders announce their value in words',
         by: player,
@@ -532,6 +538,12 @@ export const featureGroups: readonly FeatureGroup[] = [
       },
       { name: 'AirPlay', by: player, doc: ['player', 'the-element', 'Casting'] },
       { name: 'Playback speed menu', by: player, doc: ['player', 'the-element', 'The elements'] },
+      {
+        name: '360° video',
+        note: 'Equirectangular and 180°, turned by a drag, the wheel or a game controller',
+        by: ['360', ...engine],
+        doc: ['360', '360-video', 'The element'],
+      },
       {
         name: 'Headless core',
         note: 'For a page that writes its own interface',

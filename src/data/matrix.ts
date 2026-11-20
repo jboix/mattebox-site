@@ -1108,6 +1108,31 @@ export const matrix: readonly MatrixGroup[] = [
           },
         },
       },
+      {
+        label: '360° video',
+        feature: '360° video',
+        oursNote: 'Read from HLS, or set on the source',
+        cells: {
+          shaka: {
+            support: 'yes',
+            note: 'Read from the init segment, or set in the UI config',
+            source:
+              'https://github.com/shaka-project/shaka-player/blob/v5.3.0/README.md#vr-support',
+          },
+          videojs: { support: 'unstated' },
+          bitmovin: {
+            support: 'yes',
+            note: "Set in the source's config",
+            source: 'https://cdn.bitmovin.com/player/web/8/docs/interfaces/VR.VRConfig.html',
+          },
+          theoplayer: {
+            support: 'yes',
+            note: "Set in the source's config",
+            source:
+              'https://optiview.dolby.com/docs/theoplayer/v11/api-reference/web/interfaces/VRConfiguration.html',
+          },
+        },
+      },
     ],
   },
 ];

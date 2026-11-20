@@ -50,6 +50,7 @@ released on its own.
 | Ads           | `@mattebox/player-ads`           | `mattebox-player`   |
 | Preferences   | `@mattebox/player-preferences`   | `mattebox-player`   |
 | Live captions | `@mattebox/player-live-captions` | `mattebox-player`   |
+| 360° video    | `@mattebox/player-360`           | `mattebox-player`   |
 | Diagnostics   | `@mattebox/player-diagnostics`   | `mattebox-player`   |
 | TV navigation | `@mattebox/player-spatial-nav`   | `mattebox-player`   |
 | Cast sender   | `@mattebox/player-cast`          | `mattebox-player`   |

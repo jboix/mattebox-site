@@ -172,6 +172,17 @@ export const books: readonly Book[] = [
     chapters: guide(playerGuide, ['15-live-captions']),
   },
   {
+    id: '360',
+    name: '360° video',
+    packageName: '@mattebox/player-360',
+    summary: 'A 360° video seen from inside, turned by a drag, the wheel or a game controller.',
+    group: 'Player',
+    repository: 'mattebox-player',
+    tagPrefix: '@mattebox/player-360-v',
+    manifest: 'packages/360/package.json',
+    chapters: guide(playerGuide, ['16-360-video']),
+  },
+  {
     id: 'diagnostics',
     name: 'Diagnostics',
     packageName: '@mattebox/player-diagnostics',
