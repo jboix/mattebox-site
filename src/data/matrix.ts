@@ -129,6 +129,22 @@ export const matrix: readonly MatrixGroup[] = [
         },
       },
       {
+        label: 'WebM in DASH',
+        feature: 'WebM in DASH',
+        cells: {
+          shaka: {
+            support: 'yes',
+            source: 'https://github.com/shaka-project/shaka-player/blob/v5.3.0/README.md#L317-L321',
+          },
+          videojs: { support: 'unstated' },
+          bitmovin: {
+            support: 'yes',
+            source: 'https://developer.bitmovin.com/playback/docs/supported-streaming-formats',
+          },
+          theoplayer: { support: 'unstated' },
+        },
+      },
+      {
         label: 'DASH, on demand and live',
         feature: 'DASH on demand and live',
         cells: {
@@ -1111,7 +1127,7 @@ export const matrix: readonly MatrixGroup[] = [
       {
         label: '360° video',
         feature: '360° video',
-        oursNote: 'Read from HLS, or set on the source',
+        oursNote: 'Read from HLS, DASH or MP4, or set on the source',
         cells: {
           shaka: {
             support: 'yes',
@@ -1167,10 +1183,6 @@ export const extras: Readonly<Record<RivalId, readonly Extra[]>> = {
       name: 'MPEG-5 LCEVC',
       source: 'https://github.com/shaka-project/shaka-player/blob/v5.3.0/README.md#L230-L237',
     },
-    {
-      name: 'WebM in DASH',
-      source: 'https://github.com/shaka-project/shaka-player/blob/v5.3.0/README.md#L317-L321',
-    },
   ],
   videojs: [
     {
@@ -1182,10 +1194,6 @@ export const extras: Readonly<Record<RivalId, readonly Extra[]>> = {
     {
       name: 'Smooth Streaming',
       source: 'https://cdn.bitmovin.com/player/web/8/docs/enums/Core.ModuleName.html',
-    },
-    {
-      name: 'WebM',
-      source: 'https://developer.bitmovin.com/playback/docs/supported-streaming-formats',
     },
     {
       name: 'WebRTC playback',

@@ -46,6 +46,12 @@ export const featureGroups: readonly FeatureGroup[] = [
         doc: ['engine', 'hls-and-dash', 'Protocol adapters'],
       },
       {
+        name: 'WebM in DASH',
+        note: 'VP9, AV1, Opus and Vorbis, played by the browser as they are',
+        by: engine,
+        doc: ['engine', 'hls-and-dash', 'WebM in DASH'],
+      },
+      {
         name: 'Multi-period DASH',
         note: 'Played as one presentation',
         by: engine,
