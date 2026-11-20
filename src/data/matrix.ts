@@ -332,7 +332,6 @@ export const matrix: readonly MatrixGroup[] = [
       {
         label: 'WisePlay',
         feature: 'WisePlay',
-        oursNote: 'Not yet tested on a device',
         cells: {
           shaka: {
             support: 'yes',

@@ -210,7 +210,7 @@ export const featureGroups: readonly FeatureGroup[] = [
       { name: 'FairPlay', by: engine, doc: ['engine', 'drm', 'FairPlay'] },
       {
         name: 'WisePlay',
-        note: 'On LG webOS TVs and Huawei devices',
+        note: 'On Huawei devices',
         by: engine,
         doc: ['engine', 'drm', 'WisePlay'],
       },
