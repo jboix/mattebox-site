@@ -1,7 +1,7 @@
 /**
  * The screenshots the site adds to the guides. The chapters come from the product repositories
  * as text, and the pictures are taken here by `bun run screenshots`, from the hosted demos. A
- * figure names the chapter and the heading it follows, so it lands in every version that has
+ * figure gives the chapter and the heading it follows, so it lands in every version that has
  * that heading and in no other.
  */
 

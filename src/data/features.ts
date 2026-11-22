@@ -1,5 +1,5 @@
 /**
- * What Mattebox supports, as the Features page lists it. Each row names the deliverable that
+ * What Mattebox supports, as the Features page lists it. Each row gives the deliverable that
  * provides the feature and the chapter that documents it, so a claim on the page is one click
  * from its proof.
  */

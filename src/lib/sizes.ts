@@ -12,6 +12,10 @@ export interface Sizes {
   readonly player: SizeChart;
   /** The player with the engine's `hls` preset against video.js 10 with SPF, its own HLS engine. */
   readonly hls: SizeChart;
+  /** What each package of the player adds to the player with its default preset. */
+  readonly packages: SizeChart;
+  /** The player by configuration: alone, then with engine stages and packages. */
+  readonly stacks: SizeChart;
 }
 
 /**

@@ -49,7 +49,7 @@ function closeWhenLeft(element: HTMLElement): void {
 /**
  * Mounts the search in an element.
  *
- * @param element - The element, whose `data-bundle` names the index's folder.
+ * @param element - The element, whose `data-bundle` is the index's folder.
  */
 export async function mountSearch(element: HTMLElement): Promise<void> {
   const bundlePath = element.dataset.bundle ?? '/pagefind/';

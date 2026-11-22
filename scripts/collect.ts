@@ -334,6 +334,8 @@ const charts = {
   presets: ['mattebox', 'docs/preset-chart-light.svg'],
   player: ['mattebox-player', 'docs/size-chart-light.svg'],
   hls: ['mattebox-player', 'docs/hls-chart-light.svg'],
+  packages: ['mattebox-player', 'docs/package-chart-light.svg'],
+  stacks: ['mattebox-player', 'docs/stack-chart-light.svg'],
 } as const;
 const sizes = Object.fromEntries(
   Object.entries(charts).map(([name, [repository, path]]) => {

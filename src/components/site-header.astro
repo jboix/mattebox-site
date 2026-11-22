@@ -14,7 +14,7 @@ import ThemeToggle from './theme-toggle.astro';
 
 interface Props {
   /** The navigation section of the page shown. */
-  current?: 'features' | 'compare' | 'try' | 'docs';
+  current?: 'features' | 'compare' | 'size' | 'try' | 'docs';
 }
 
 const { current } = Astro.props;
@@ -23,6 +23,7 @@ const searchable = current === 'docs';
 const pages = [
   { id: 'features', label: 'Features', href: link('features/') },
   { id: 'compare', label: 'Compare', href: link('compare/') },
+  { id: 'size', label: 'Size', href: link('size/') },
   { id: 'try', label: 'Try it', href: link('try/') },
   { id: 'docs', label: 'Docs', href: link('docs/') },
 ] as const;

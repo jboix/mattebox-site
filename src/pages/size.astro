@@ -1,0 +1,243 @@
+---
+/**
+ * The size article: the player's size by configuration, from the player alone to the stages
+ * and packages added to it. Every figure comes from the player repository's charts, and each
+ * example's code is checked against the row that measured it.
+ */
+import SizeBars from '../components/size-bars.astro';
+import { chains, packageSpecifiers } from '../data/stacks.ts';
+import Base from '../layouts/base.astro';
+import { chapterHref, collectedBooks } from '../lib/docs.ts';
+import { repositories } from '../lib/site.ts';
+import { readSizes } from '../lib/sizes.ts';
+import { measure, pageCode, type Step } from '../lib/stacks.ts';
+
+const sizes = readSizes();
+const books = collectedBooks();
+const kb = (value: number) => `${value.toFixed(1)} KB`;
+
+const measured = chains.map((chain) => ({
+  chain,
+  steps: measure(sizes.stacks, chain.steps),
+  code: pageCode(chain.steps, packageSpecifiers),
+}));
+
+/** A row of the stack chart by its label. */
+const rowOf = (label: string) => {
+  const row = sizes.stacks.rows.find((each) => each.label === label);
+  if (row === undefined) throw new Error(`The stack chart has no row "${label}".`);
+  return row.kilobytes;
+};
+
+/** What a step imports: the player itself for the first step, then its stages and packages. */
+const importsOf = (step: Step) => {
+  const imports = [
+    ...(step.stages ?? []).map((path) => `mattebox/${path}`),
+    ...(step.packages ?? []).map((each) => packageSpecifiers[each] ?? each),
+  ];
+  return imports.length === 0 ? '@mattebox/player' : imports.join(', ');
+};
+
+const hls = measured.find((each) => each.chain.id === 'hls');
+const drm = hls?.steps.find((each) => each.step.row === '+ Widevine, FairPlay');
+const drmAdds = drm?.added ?? null;
+if (drmAdds === null) throw new Error('The HLS example lost its DRM step.');
+const playerAlone = rowOf('Player alone');
+const hlsOnDemand = rowOf('+ HLS on demand');
+const hlsPreset = rowOf('Player + hls preset');
+const fullPreset = rowOf('Player + full preset');
+const everything = rowOf('+ every package');
+const stagesHref = chapterHref(books, ['player', 'the-element', 'Stages']);
+---
+
+<Base
+  title="Size"
+  description="The Mattebox player's size by configuration: the player alone, with HLS or DASH stages, and with each package, measured from the built packages."
+  current="size"
+>
+  <div class="container section">
+    <p class="eyebrow">Size</p>
+    <h1 class="section-title">Import only what you need</h1>
+    <p class="lede">
+      The player's size depends on its configuration. You give it the engine stages your streams
+      need, and you import the packages your viewers need. The player alone is {kb(playerAlone)}.
+      With HLS on demand it is {kb(hlsOnDemand)}. With the full preset and every package it is{' '}
+      {kb(everything)}.
+    </p>
+
+    <section class="block">
+      <h2>Configurations</h2>
+      <p>
+        Each row is the player in one configuration, minified and gzipped. The first row is the
+        player with no stage: the element, its controls and the engine's core. Every other row
+        includes it. A row that starts with + adds to the row above it.
+      </p>
+      <SizeBars chart={sizes.stacks} plain />
+    </section>
+
+    {
+      measured.map(({ chain, steps, code }) => (
+        <section class="block" id={chain.id}>
+          <h2>{chain.title}</h2>
+          <p>{chain.intro}</p>
+          <div class="scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Step</th>
+                  <th scope="col" class="imports">Imports</th>
+                  <th scope="col" class="num">Adds</th>
+                  <th scope="col" class="num">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {steps.map(({ step, kilobytes, added }) => (
+                  <tr>
+                    <th scope="row">{step.label ?? step.row}</th>
+                    <td class="mono imports">{importsOf(step)}</td>
+                    <td class="num mono">{added === null ? '' : `+${kb(added)}`}</td>
+                    <td class="num mono">{kb(kilobytes)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {chain.id === 'hls' && (
+            <p class="note">
+              Widevine and FairPlay add {kb(drmAdds)} because the player already includes the
+              engine's EME code, for Safari's own HLS.
+            </p>
+          )}
+          <p>The code of the last row:</p>
+          <pre class="code"><code>{code}</code></pre>
+        </section>
+      ))
+    }
+
+    <section class="block">
+      <h2>Presets</h2>
+      <p>
+        Without a stage list, the player loads a preset: the one in its <code>preset</code>{' '}
+        attribute, or <code>full</code> by default. A preset includes every stage its protocol may
+        need, and a bundler cannot remove the ones your streams do not use.
+      </p>
+      <ul class="facts">
+        <li>The player with the <code>hls</code> preset is {kb(hlsPreset)}.</li>
+        <li>The player with the <code>full</code> preset is {kb(fullPreset)}.</li>
+        <li>The player with the <code>full</code> preset and every package is {kb(everything)}.</li>
+      </ul>
+      <pre class="code"><code>{'<mattebox-player preset="hls" src="https://example.com/master.m3u8"></mattebox-player>'}</code></pre>
+      <p>
+        A stage list takes one call to <code>define()</code>.{' '}
+        <a href={stagesHref}>The player's guide</a> shows it.
+      </p>
+    </section>
+
+    <section class="block">
+      <h2>Packages</h2>
+      <p>
+        The size each package adds to the player with the <code>full</code> preset. The Chromecast
+        row leaves out Google's sender SDK, which the button loads from Google when the page shows
+        it.
+      </p>
+      <SizeBars chart={sizes.packages} plain />
+    </section>
+
+    <section class="block">
+      <h2>Method</h2>
+      <p>
+        The player repository's size script bundles each configuration from the built packages
+        with rolldown, minifies it, and compresses it with gzip at level 9. A preset's code counts
+        only when the configuration loads that preset. The same script draws the package chart in
+        the <a href={`${repositories.player}#readme`}>player's README</a>.
+      </p>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .block {
+    margin-top: 64px;
+  }
+
+  .block h2 {
+    font-size: 2rem;
+    padding-bottom: 8px;
+    border-bottom: 3px solid var(--color-ink);
+  }
+
+  .block > p {
+    max-width: 68ch;
+  }
+
+  .scroll {
+    overflow-x: auto;
+    margin: 24px 0;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th,
+  td {
+    padding: 12px;
+    border-bottom: 1px solid var(--color-border);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  thead th {
+    font: 500 0.6875rem / 1.2 var(--font-mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-ink-secondary);
+    vertical-align: bottom;
+  }
+
+  tbody th {
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  td.mono {
+    font-size: 0.8125rem;
+    overflow-wrap: anywhere;
+  }
+
+  .num {
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  /* A phone keeps the sizes on screen: the code under the table lists the same imports. */
+  @media (max-width: 640px) {
+    .imports {
+      display: none;
+    }
+  }
+
+  .code {
+    margin: 16px 0 24px;
+    padding: 14px 16px;
+    /* It wraps rather than scrolls, so no reader has to focus it to see a long line. */
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    background: var(--color-surface-muted);
+    font: 13.5px / 1.55 var(--font-mono);
+  }
+
+  .facts {
+    margin: 16px 0;
+    padding-left: 20px;
+  }
+
+  .note {
+    margin-top: 16px;
+    font-size: 0.9375rem;
+    color: var(--color-ink-secondary);
+  }
+</style>

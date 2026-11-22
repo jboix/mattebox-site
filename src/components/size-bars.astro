@@ -1,7 +1,8 @@
 ---
 /**
- * A size chart as bars: Mattebox first, in vermilion, and the others in the ink's colour. The
- * figures are the product repositories' own measurements.
+ * A size chart as bars: Mattebox first, in vermilion, and the others in the ink's colour. A
+ * chart of Mattebox's own rows alone is `plain`: every bar in the ink's colour. The figures are
+ * the product repositories' own measurements.
  */
 import type { SizeChart } from '../lib/size-chart.ts';
 
@@ -9,9 +10,11 @@ interface Props {
   chart: SizeChart;
   /** What the first bar is called, when the chart's own label is the package name. */
   first?: string;
+  /** Every row is Mattebox's, so none stands out. */
+  plain?: boolean;
 }
 
-const { chart, first } = Astro.props;
+const { chart, first, plain = false } = Astro.props;
 const most = Math.max(...chart.rows.map((row) => row.kilobytes));
 ---
 
@@ -19,7 +22,7 @@ const most = Math.max(...chart.rows.map((row) => row.kilobytes));
   <ol>
     {
       chart.rows.map((row, index) => (
-        <li class:list={{ ours: index === 0 }}>
+        <li class:list={{ ours: index === 0 && !plain }}>
           <span class="label">
             <strong>{index === 0 && first !== undefined ? first : row.label}</strong>
             <span class="detail mono">{row.detail}</span>
