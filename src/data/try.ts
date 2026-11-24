@@ -48,6 +48,20 @@ export const tryables: readonly Tryable[] = [
     book: 'playlist',
   },
   {
+    name: 'Ads demo',
+    what: "Ad breaks from the stream itself or from an ad server's VAST or VMAP, in HLS and DASH. The page lists each break and logs every event and beacon.",
+    href: hosted.ads,
+    source: repositories.player,
+    book: 'ads',
+  },
+  {
+    name: '360° demo',
+    what: 'A 360° programme seen from inside. Drag the picture to look around, zoom with the wheel, and switch the projection.',
+    href: hosted.view360,
+    source: repositories.player,
+    book: '360',
+  },
+  {
     name: 'Cast receiver',
     what: "The receiver page a Chromecast loads, running under Google's real receiver framework in a desktop browser.",
     href: hosted.receiver,

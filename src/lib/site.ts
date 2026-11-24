@@ -25,6 +25,8 @@ export const hosted = {
   demo: 'https://demo.mattebox.ch/',
   playlist: 'https://demo.mattebox.ch/playlist.html',
   reels: 'https://demo.mattebox.ch/reels.html',
+  ads: 'https://demo.mattebox.ch/ads.html',
+  view360: 'https://demo.mattebox.ch/360.html',
   editor: 'https://editor.mattebox.ch/',
   receiver: 'https://cast.mattebox.ch/',
 } as const;
