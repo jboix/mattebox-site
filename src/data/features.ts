@@ -546,9 +546,15 @@ export const featureGroups: readonly FeatureGroup[] = [
       { name: 'Playback speed menu', by: player, doc: ['player', 'the-element', 'The elements'] },
       {
         name: '360° video',
-        note: 'Equirectangular and 180°, turned by a drag, the wheel or a game controller',
+        note: 'Equirectangular and 180°, turned by a drag, the wheel, a game controller or the device',
         by: ['360', ...engine],
         doc: ['360', '360-video', 'The element'],
+      },
+      {
+        name: '360° video in a VR headset',
+        note: 'A button shows the view in the headset, through WebXR, and the viewer looks around with their head',
+        by: ['360'],
+        doc: ['360', '360-video', 'Headsets'],
       },
       {
         name: 'Headless core',

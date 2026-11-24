@@ -175,7 +175,8 @@ export const books: readonly Book[] = [
     id: '360',
     name: '360° video',
     packageName: '@mattebox/player-360',
-    summary: 'A 360° video seen from inside, turned by a drag, the wheel or a game controller.',
+    summary:
+      'A 360° video seen from inside: turned by a drag, the wheel, a game controller or the device, and shown in a VR headset.',
     group: 'Player',
     repository: 'mattebox-player',
     tagPrefix: '@mattebox/player-360-v',
