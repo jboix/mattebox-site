@@ -27,6 +27,8 @@
   --color-ok-ink: #1f5e38;
   --color-ok-soft: #e3efe1;
   --color-ok-border: #c4dcc3;
+  /* The ground of a code block that is dark in both themes. */
+  --color-code-ground: #2b2b30;
 
   --radius-panel: 4px;
   --radius-card: 4px;
@@ -53,5 +55,7 @@
   --color-ok-ink: #9fd3ad;
   --color-ok-soft: #1f2e24;
   --color-ok-border: #2f4a38;
+  /* A tinted section is charcoal in this theme, so the code takes the page's ground. */
+  --color-code-ground: #1c1c20;
   color-scheme: dark;
 }
