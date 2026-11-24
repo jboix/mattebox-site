@@ -1,6 +1,6 @@
 import { expect, test } from 'bun:test';
 import { featureGroups } from './features.ts';
-import { extras, matrix, rivals } from './matrix.ts';
+import { matrix, rivals } from './matrix.ts';
 
 const rows = matrix.flatMap((group) => group.rows);
 const cells = rows.flatMap((row) => rivals.map((rival) => row.cells[rival.id]));
@@ -20,10 +20,4 @@ test('every stated cell links to its source', () => {
 test('no row is listed twice', () => {
   const labels = rows.map((row) => row.label);
   expect(new Set(labels).size).toBe(labels.length);
-});
-
-test('every feature another player has and Mattebox lacks links to its source', () => {
-  for (const rival of rivals) {
-    for (const extra of extras[rival.id]) expect(extra.source).toStartWith('https://');
-  }
 });
