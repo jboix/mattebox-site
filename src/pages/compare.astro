@@ -42,12 +42,18 @@ const sizeOf = (label: string) => {
   return row.kilobytes;
 };
 const playerBook = books.find((book) => book.id === 'player');
+/**
+ * Mattebox's size in the table: the player with the full preset and every package, a row of the
+ * stack chart. The rows count features that packages provide, so the size counts the packages.
+ */
+const withEveryPackage = sizes.stacks.rows.find((each) => each.label === '+ every package');
+if (withEveryPackage === undefined) throw new Error('The stack chart has no row "+ every package".');
 const columns: readonly Column[] = [
   {
     id: 'mattebox',
     name: '@mattebox/player',
     version: playerBook === undefined ? '' : latestOf(playerBook).version,
-    kilobytes: ours(sizes.player),
+    kilobytes: withEveryPackage.kilobytes,
   },
   ...rivals.map((rival) => ({
     id: rival.id,
@@ -116,7 +122,8 @@ const engineHlsShare =
       <h2>Features and size</h2>
       <p>
         {rows.length} features, and what each player states about them. @mattebox/player has{' '}
-        {count('mattebox', 'yes')} of them in {ours(sizes.player).toFixed(1)} KB.
+        {count('mattebox', 'yes')} of them in {withEveryPackage.kilobytes.toFixed(1)} KB, with every
+        package.
       </p>
       <ul class="legend">
         {
@@ -230,15 +237,27 @@ const engineHlsShare =
       <p class="note">
         Checked on {matrixCheckedOn}. "Not stated" means the project's docs and source say nothing
         either way. A video.js 10 cell counts what its media elements give through SPF, hls.js and
-        dash.js, the build the size measures. The sizes are the{' '}
+        dash.js, the build the size measures. The other players' sizes are the{' '}
         <a href="https://github.com/jboix/mattebox-player/blob/main/scripts/size-chart.mjs"
           >player chart</a
-        >, the one on the <a href={link('')}>home page</a>.
+        >, the one on the <a href={link('')}>home page</a>. The Mattebox size is the last row of
+        the chart on the <a href={link('size/')}>size page</a>.
       </p>
       <div class="counted" id="what-the-sizes-count">
         <h3>What each size counts</h3>
         <ul>
-          <li>The Mattebox size is the default ES2015 build of the player and the engine.</li>
+          <li>
+            The Mattebox size is the player with the full preset and every package, in the default
+            ES2015 build, because the table counts the features of every package.
+          </li>
+          <li>
+            The player and the engine without a package are {ours(sizes.player).toFixed(1)} KB, the
+            bar on the home page.
+          </li>
+          <li>
+            The Mattebox size leaves out @mattebox/cast-receiver, which runs on the Chromecast and
+            not in your page.
+          </li>
           <li>
             The Shaka Player size is its ES2021 ui build, the smaller of the{' '}
             <a href="https://www.jsdelivr.com/package/npm/shaka-player?tab=files&path=dist"
