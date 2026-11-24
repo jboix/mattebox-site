@@ -1142,6 +1142,32 @@ export const matrix: readonly MatrixGroup[] = [
           },
         },
       },
+      {
+        label: '360° video in a VR headset',
+        feature: '360° video in a VR headset',
+        oursNote: 'A headset session through WebXR, one picture for both eyes',
+        cells: {
+          shaka: {
+            support: 'yes',
+            note: 'A stereoscopic mode, switched by a button of the UI',
+            source:
+              'https://github.com/shaka-project/shaka-player/blob/v5.3.0/docs/tutorials/ui-customization.md#L84-L85',
+          },
+          videojs: { support: 'unstated' },
+          bitmovin: {
+            support: 'yes',
+            note: 'A stereo mode, with the config of a Cardboard device',
+            source:
+              'https://cdn.bitmovin.com/player/web/8/docs/interfaces/VR.VRConfig.html#cardboard',
+          },
+          theoplayer: {
+            support: 'yes',
+            note: 'A stereo mode',
+            source:
+              'https://optiview.dolby.com/docs/theoplayer/v11/api-reference/web/interfaces/VR.html#stereo',
+          },
+        },
+      },
     ],
   },
 ];
