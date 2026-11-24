@@ -1149,20 +1149,20 @@ export const matrix: readonly MatrixGroup[] = [
         cells: {
           shaka: {
             support: 'yes',
-            note: 'A stereoscopic mode, switched by a button of the UI',
+            note: 'A stereoscopic mode, where each eye gets half of the screen. Its VR docs state no WebXR session',
             source:
               'https://github.com/shaka-project/shaka-player/blob/v5.3.0/docs/tutorials/ui-customization.md#L84-L85',
           },
           videojs: { support: 'unstated' },
           bitmovin: {
             support: 'yes',
-            note: 'A stereo mode, with the config of a Cardboard device',
+            note: 'A stereo mode, with the config of a Cardboard device. Its VR API states no WebXR session',
             source:
               'https://cdn.bitmovin.com/player/web/8/docs/interfaces/VR.VRConfig.html#cardboard',
           },
           theoplayer: {
             support: 'yes',
-            note: 'A stereo mode',
+            note: 'A stereo mode. Its VR API states no WebXR session',
             source:
               'https://optiview.dolby.com/docs/theoplayer/v11/api-reference/web/interfaces/VR.html#stereo',
           },
