@@ -331,6 +331,7 @@ writeFileSync(join(output, 'manifest.json'), `${JSON.stringify(manifest, null, 2
 /** The size charts the site shows, each on its repository's main branch. */
 const charts = {
   engine: ['mattebox', 'docs/size-chart-light.svg'],
+  engineHls: ['mattebox', 'docs/hls-chart-light.svg'],
   presets: ['mattebox', 'docs/preset-chart-light.svg'],
   player: ['mattebox-player', 'docs/size-chart-light.svg'],
   hls: ['mattebox-player', 'docs/hls-chart-light.svg'],

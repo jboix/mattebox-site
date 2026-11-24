@@ -93,6 +93,11 @@ ${element}`,
       <div class="chart">
         <SizeBars chart={sizes.player} first="Mattebox player" />
       </div>
+      <p class="counted">
+        The Mattebox bar is the default ES2015 build, and the Shaka Player bar its smaller ES2021
+        build. The THEOplayer bar leaves out the transmuxer it loads at run time for MPEG-TS.{' '}
+        <a href={link('compare/#what-the-sizes-count')}>What each bar counts</a>.
+      </p>
       <p><a href={link('compare/')}>See the engines and the presets compared</a></p>
     </div>
   </section>
@@ -268,6 +273,12 @@ ${element}`,
 
   .chart {
     margin: 36px 0 20px;
+  }
+
+  .counted {
+    max-width: 72ch;
+    font-size: 0.9375rem;
+    color: var(--color-ink-secondary);
   }
 
   .kit,

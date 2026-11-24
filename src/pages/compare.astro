@@ -92,6 +92,12 @@ const legend: readonly [Support, string][] = [
   ['unstated', 'Not stated either way'],
 ];
 const hlsRival = sizes.hls.rows[1];
+const engineHlsRival = sizes.engineHls.rows[1];
+/** Mattebox's share of the next smallest row of the HLS engine chart, in percent. */
+const engineHlsShare =
+  engineHlsRival === undefined
+    ? undefined
+    : Math.round((ours(sizes.engineHls) / engineHlsRival.kilobytes) * 100);
 ---
 
 <Base
@@ -230,6 +236,34 @@ const hlsRival = sizes.hls.rows[1];
           >player chart</a
         >, the one on the <a href={link('')}>home page</a>.
       </p>
+      <div class="counted" id="what-the-sizes-count">
+        <h3>What each size counts</h3>
+        <ul>
+          <li>The Mattebox size is the default ES2015 build of the player and the engine.</li>
+          <li>
+            The Shaka Player size is its ES2021 ui build, the smaller of the{' '}
+            <a href="https://www.jsdelivr.com/package/npm/shaka-player?tab=files&path=dist"
+              >two its package ships</a
+            >.
+          </li>
+          <li>
+            The Bitmovin Player size is the full bundle, because the table counts the features of
+            every module.
+          </li>
+          <li>
+            The chart has a second Bitmovin row: the{' '}
+            <a href="https://cdn.bitmovin.com/player/web/8/docs/enums/Core.ModuleName.html"
+              >modules</a
+            >{' '}
+            of the same npm package that HLS, DASH, MPEG-TS and DRM need, with the same interface.
+          </li>
+          <li>
+            The THEOplayer size leaves out its transmuxer, which THEOplayer{' '}
+            <a href="https://www.npmjs.com/package/theoplayer">loads from separate files</a> at run
+            time. A page with MPEG-TS streams downloads more than the size shown.
+          </li>
+        </ul>
+      </div>
     </section>
 
     <section class="block">
@@ -311,6 +345,31 @@ const hlsRival = sizes.hls.rows[1];
         repositories. Each one installs the other players from npm at the version shown and bundles
         them the same way, so you can run it and get the same numbers.
       </p>
+    </section>
+
+    <section class="block">
+      <h2>HLS alone</h2>
+      <p>
+        An engine that plays HLS with fMP4 and MPEG-TS segments and DRM, without a player
+        interface. Each row is the smallest build its project publishes with that reach. Mattebox
+        is {ours(sizes.engineHls).toFixed(1)} KB{
+          engineHlsShare !== undefined && `, ${engineHlsShare}% of the next smallest`
+        }.
+      </p>
+      <SizeBars chart={sizes.engineHls} first="Mattebox" />
+      <ul class="counted">
+        <li>
+          The Mattebox row is the <code>hls-ts-drm</code> preset in its default ES2015 build.
+        </li>
+        <li>The hls.js row is its full ES module build. Its light build has no DRM.</li>
+        <li>The Shaka Player row is its ES2021 HLS build, which has no DASH and no interface.</li>
+        <li>
+          The Bitmovin Player row is the{' '}
+          <a href="https://cdn.bitmovin.com/player/web/8/docs/enums/Core.ModuleName.html">modules</a
+          >{' '}
+          that HLS, MPEG-TS and DRM need, without its interface.
+        </li>
+      </ul>
     </section>
 
     <section class="block">
@@ -425,6 +484,26 @@ const hlsRival = sizes.hls.rows[1];
     margin-top: 16px;
     font-size: 0.9375rem;
     color: var(--color-ink-secondary);
+  }
+
+  /* What a size counts: the build measured, and what it leaves out. */
+  .counted {
+    margin-top: 16px;
+    font-size: 0.9375rem;
+    color: var(--color-ink-secondary);
+  }
+
+  .counted h3 {
+    margin: 24px 0 8px;
+    font-size: 1rem;
+    color: var(--color-ink);
+  }
+
+  ul.counted,
+  .counted ul {
+    max-width: 72ch;
+    margin-bottom: 0;
+    padding-left: 20px;
   }
 
   .legend {

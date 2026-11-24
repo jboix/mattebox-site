@@ -6,6 +6,8 @@ import type { SizeChart } from './size-chart.ts';
 export interface Sizes {
   /** The engine against the other engines. */
   readonly engine: SizeChart;
+  /** The engine's HLS preset with MPEG-TS and DRM against the smallest build of each other engine with that reach. */
+  readonly engineHls: SizeChart;
   /** The engine's presets, from the kernel alone to every stage. */
   readonly presets: SizeChart;
   /** The player with its engine against the other players with theirs. */
